@@ -1,0 +1,7 @@
+README.md
+pyproject.toml
+src/molecular_screening_workbench.egg-info/PKG-INFO
+src/molecular_screening_workbench.egg-info/SOURCES.txt
+src/molecular_screening_workbench.egg-info/dependency_links.txt
+src/molecular_screening_workbench.egg-info/requires.txt
+src/molecular_screening_workbench.egg-info/top_level.txt
