@@ -1,0 +1,5 @@
+plate_id,well,variant_id,replicate,signal,control_type,screening_round
+PLATE_001,A1,VAR_MUT_01,1,45.2,sample,1
+PLATE_001,A2,VAR_MUT_02,1,12.8,sample,1
+PLATE_001,H12,,1,1.1,blank,1
+PLATE_001,P24,,1,98.5,positive,1

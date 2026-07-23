@@ -1,7 +1,16 @@
 README.md
 pyproject.toml
+src/molecular_screening/__init__.py
+src/molecular_screening/exceptions.py
+src/molecular_screening/plate_reader.py
 src/molecular_screening_workbench.egg-info/PKG-INFO
 src/molecular_screening_workbench.egg-info/SOURCES.txt
 src/molecular_screening_workbench.egg-info/dependency_links.txt
 src/molecular_screening_workbench.egg-info/requires.txt
 src/molecular_screening_workbench.egg-info/top_level.txt
+src/playground/csv_processing.py
+src/playground/data.py
+src/playground/hello_frieda.py
+src/playground/python_logging.py
+src/playground/python_logging_dict.py
+tests/test_plate_reader.py

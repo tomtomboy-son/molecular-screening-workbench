@@ -111,8 +111,8 @@ GitHubから新しいディレクトリへcloneし、仮想環境を再構築で
 **［RP-LP］Exceptions, Logging, and Debugging**
 
 4. **［RP］Raising and Handling Python Exceptions** ✓
-5. **［RP］Using raise for Effective Exceptions**
-6. **［RP］Logging Inside Python**
+5. **［RP］Using raise for Effective Exceptions** ✓
+6. **［RP］Logging Inside Python** ✓
 
 正式Learning Pathには例外処理、独自エラー、ログ、デバッグが含まれる。
 
