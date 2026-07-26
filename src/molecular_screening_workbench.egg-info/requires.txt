@@ -7,6 +7,8 @@ xlwt
 openpyxl
 xlsxwriter
 xlrd
+jupyter
+lxml
 
 [dev]
 pytest>=8

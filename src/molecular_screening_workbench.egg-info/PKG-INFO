@@ -13,6 +13,8 @@ Requires-Dist: xlwt
 Requires-Dist: openpyxl
 Requires-Dist: xlsxwriter
 Requires-Dist: xlrd
+Requires-Dist: jupyter
+Requires-Dist: lxml
 Provides-Extra: dev
 Requires-Dist: pytest>=8; extra == "dev"
 
@@ -134,7 +136,7 @@ GitHubから新しいディレクトリへcloneし、仮想環境を再構築で
 
 正式Learning Pathには例外処理、独自エラー、ログ、デバッグが含まれる。
 
-### ［BUILD］
+### ［BUILD］✓
 
 プレートリーダーCSVを次の統一形式へ変換する。
 

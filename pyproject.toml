@@ -18,6 +18,8 @@ dependencies = [
     "openpyxl",
     "xlsxwriter",
     "xlrd",
+    "jupyter",
+    "lxml",
 ]
 
 [project.optional-dependencies]

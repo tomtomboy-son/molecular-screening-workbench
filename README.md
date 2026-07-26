@@ -148,7 +148,7 @@ screening_round
 
 履修する正式教材：
 
-1. **［RP］Introduction to pandas**
+1. **［RP］Introduction to pandas** ✓
 2. **［RP］Explore Your Dataset With pandas**
 3. **［RP］The pandas DataFrame: Working With Data Efficiently**
 4. **［RP］Reading and Writing Files With pandas**
