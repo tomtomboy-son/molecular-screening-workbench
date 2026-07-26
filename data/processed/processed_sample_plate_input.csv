@@ -1,0 +1,9 @@
+plate_id,well,variant_id,replicate,signal,control_type,screening_round
+P001,A1,VAR001,1,125.4,sample,1
+P001,A2,,1,210.0,positive,1
+P001,A3,,1,4.2,negative,1
+P001,A4,,1,1.1,blank,1
+P002,B1,VAR002,2,98.75,sample,2
+P002,B2,,2,205.5,positive,2
+P002,B3,,2,3.0,negative,2
+P002,B4,,2,0.8,blank,2

@@ -1,0 +1,9 @@
+Plate_Barcode,Well_Position,Mutation_ID,Rep_Number,Raw_Signal,Type,Round
+P001, a01 ,VAR001,1,125.4,sample,1
+P001,A02,,1,210,positive,1
+P001,A03,,1,4.2,negative,1
+P001,A04,,1,1.1,blank,1
+P002, b01 ,VAR002,2,98.75,sample,2
+P002,B02,,2,205.5,positive,2
+P002,B03,,2,3,negative,2
+P002,B04,,2,0.8,blank,2

@@ -1,9 +1,16 @@
 import json
 import logging
 from pathlib import Path
-from unittest import result
 import pandas as pd
 import sys
+from molecular_screening.exceptions import (
+    DuplicateWellError,
+    InvalidSignalError,
+    InvalidWellError,
+    MissingControlError,
+    MissingRequiredColumnsError
+)
+from unittest import result
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -63,11 +70,10 @@ def validate_well_ranges(well_series: pd.Series) -> None:
         for i in range(len(invalid_values)):
             spreadsheet_row = invalid_rows[i] + 2
             error_lines.append(f"-> Row {spreadsheet_row}: Found {invalid_values[i]}")
-        logger.critical(error_lines)
 
-        sys.exit(1)
+        raise InvalidWellError("\n".join(error_lines))
 
-def validate_signal_values(signal_series: pd.Series) -> None:
+def validate_signal_values(signal_series: pd.Series) -> pd.Series:
     """mission: ensures the signal column contains only numbers"""
     numeric_parsed = pd.to_numeric(signal_series, errors="coerce")
     invalid_mask = signal_series.notna() & numeric_parsed.isna()
@@ -82,8 +88,9 @@ def validate_signal_values(signal_series: pd.Series) -> None:
             spreadsheet_row = invalid_rows[i] + 2
             error_lines.append(f"-> Row {spreadsheet_row}: Found {invalid_values[i]}")
 
-        logger.critical(error_lines)
-        sys.exit(1)
+        raise InvalidSignalError("\n".join(error_lines))
+
+    return numeric_parsed
 
 def validate_unique_entries(df: pd.DataFrame) -> None:
     """mission: rejects duplicate rows sharing the exact same plate, well, and round"""
@@ -102,8 +109,7 @@ def validate_unique_entries(df: pd.DataFrame) -> None:
             round = duplicate_rows.iloc[i]["screening_round"]
             error_lines.append(f"-> Row {spreadsheet_row}: Collision Found [plate: {plate}, well: {well}, round: {round}]")
 
-        logger.critical(error_lines)
-        sys.exit(1)
+        raise DuplicateWellError("\n".join(error_lines))
 
 def validate_control_compositions(df: pd.DataFrame) -> None:
     """mission: assures each separate plate contains the entire baseline of required control types"""
@@ -121,8 +127,7 @@ def validate_control_compositions(df: pd.DataFrame) -> None:
             composition_errors.append(f"-> Round {current_round}, Plate {current_plate} is missing {missing_str}")
 
     if composition_errors:
-        logger.critical(composition_errors)
-    sys.exit(1)
+        raise MissingControlError("\n".join(composition_errors))
 
 def clean_dataframe_values(df: pd.DataFrame) -> pd.DataFrame:
     """mission: directs internal value alterations safely"""
@@ -135,7 +140,8 @@ def clean_dataframe_values(df: pd.DataFrame) -> pd.DataFrame:
     validate_well_ranges(cleaned_df["well"])
 
     logger.info("Validating numeric signal values...")
-    validate_signal_values(cleaned_df["signal"])
+    # validate_signal_values(cleaned_df["signal"])
+    cleaned_df["signal"] = validate_signal_values(cleaned_df["signal"])
 
     logger.info("Evaluating dataset for composite duplicate entries...")
     validate_unique_entries(cleaned_df)
@@ -160,7 +166,7 @@ def process_csv_structure(input_path: Path, output_path: Path, config_path: Path
 
         missing_cols = [col for col in acceptable_columns if col not in df.columns]
         if missing_cols:
-            raise ValueError(f"Missing required columns: {missing_cols}")
+            raise MissingRequiredColumnsError(f"Missing required columns: {missing_cols}")
 
         # pandas magics make df reorder columns based on the list provided, and filter out any columns not in the list
         df_standardized = df[acceptable_columns]
@@ -177,6 +183,8 @@ def process_csv_structure(input_path: Path, output_path: Path, config_path: Path
     except Exception:
         logger.exception(f"failed to process csv")
         raise
+
+from molecular_screening.exceptions import PlateDataError
 
 if __name__ == "__main__":
     SCRIPT_DIR = Path(__file__).resolve().parent.parent.parent
@@ -195,4 +203,7 @@ if __name__ == "__main__":
         logger.error("The file does not exist: %s", raw_data_path)
         sys.exit(1)
 
-    process_csv_structure(raw_data_path, processed_dir, config_file)
+    try:
+        process_csv_structure(raw_data_path, processed_dir, config_file)
+    except PlateDataError:
+        sys.exit(1)
