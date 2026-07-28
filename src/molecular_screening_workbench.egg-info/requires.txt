@@ -1,6 +1,7 @@
 numpy
 pandas
 matplotlib
+scipy
 biopython
 scikit-learn
 xlwt
