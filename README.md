@@ -152,25 +152,51 @@ screening_round
 2. **［RP］Explore Your Dataset With pandas** ✓
 3. **［RP］The pandas DataFrame: Working With Data Efficiently** ✓
 4. **［RP］Reading and Writing Files With pandas** ✓
-5. **［RP］Data Cleaning With pandas and NumPy**
-6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies**
-7. **［RP］pandas GroupBy: Grouping Real World Data in Python**
+5. **［RP］Data Cleaning With pandas and NumPy** ✓
+6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies** ✓ 
+7. **［RP］pandas GroupBy: Grouping Real World Data in Python** ✓
 8. **［RP］Combining Data in pandas With concat() and merge()**
 
 このLearning PathはDataFrame、欠損処理、GroupBy、データ結合、pivot、性能改善まで扱う。
 
-### ［BUILD］
+### ［BUILD］プレート測定値の補正・集約パイプライン
 
-* ブランク値の減算
-* 陽性対照による正規化
-* 反復測定の平均
-* 標準偏差
-* 変動係数
-* 欠損ウェル検出
-* プレート間結合
-* 配列IDと測定値の結合
+標準化済みプレートCSVを読み込み、プレートごとの対照値を用いて測定値を補正し、variant単位の解析用テーブルを出力する。
 
-ここではまだAIを使わない。まず、実験データの各行が何を意味するかを正しく管理する。
+実装対象：
+
+プレートごとのブランク平均を計算する
+sample値からブランク平均を減算する
+陽性対照を基準に正規化する
+variantごとに反復測定をまとめる
+平均、標準偏差、変動係数、測定数を計算する
+期待されるウェルまたはvariantの欠損を検出する
+複数プレートを同一スキーマで結合する
+variant_idをキーに配列表と結合する
+
+完成物：
+
+src/molecular_screening/plate_analysis.py
+
+入力：
+
+data/processed/processed_*.csv
+data/reference/variants.csv
+
+出力：
+
+data/analysis/variant_activity_summary.csv
+data/analysis/plate_qc_summary.csv
+
+合格条件：
+
+対照値がプレート単位で計算される
+異なるプレートの対照を混用しない
+各variantについて平均・標準偏差・変動係数が得られる
+欠損ウェルを一覧化できる
+配列IDとの結合失敗を検出できる
+pytestで正常系と異常系が通る
+一つのコマンドで入力から出力まで生成できる
 
 ---
 
