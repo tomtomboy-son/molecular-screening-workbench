@@ -155,7 +155,7 @@ screening_round
 5. **［RP］Data Cleaning With pandas and NumPy** ✓
 6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies** ✓ 
 7. **［RP］pandas GroupBy: Grouping Real World Data in Python** ✓
-8. **［RP］Combining Data in pandas With concat() and merge()**
+8. **［RP］Combining Data in pandas With concat() and merge()** ✓
 
 このLearning PathはDataFrame、欠損処理、GroupBy、データ結合、pivot、性能改善まで扱う。
 
@@ -164,7 +164,6 @@ screening_round
 標準化済みプレートCSVを読み込み、プレートごとの対照値を用いて測定値を補正し、variant単位の解析用テーブルを出力する。
 
 実装対象：
-
 プレートごとのブランク平均を計算する
 sample値からブランク平均を減算する
 陽性対照を基準に正規化する
