@@ -15,3 +15,15 @@ class DuplicateWellError(PlateDataError):
 
 class MissingControlError(PlateDataError):
     pass
+
+class MissingPlateQCError(PlateDataError):
+    pass
+
+class DuplicatePlateQCError(PlateDataError):
+    pass
+
+class InvalidNormalizationDenominatorError(PlateDataError):
+    pass
+
+class MissingVariantIDError(PlateDataError):
+    pass
