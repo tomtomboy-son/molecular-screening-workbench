@@ -27,3 +27,24 @@ class InvalidNormalizationDenominatorError(PlateDataError):
 
 class MissingVariantIDError(PlateDataError):
     pass
+
+class DuplicateExpectedWellError(PlateDataError):
+    pass
+
+class DuplicateVariantKeyError(PlateDataError):
+    pass
+
+class DuplicateVariantReferenceError(PlateDataError):
+    pass
+
+class MissingSequenceError(PlateDataError):
+    pass
+
+class MissingVariantReferenceError(PlateDataError):
+    pass
+
+class MissingVariantCoverageError(PlateDataError):
+    pass
+
+class MissingPlateLayoutQCError(PlateDataError):
+    pass

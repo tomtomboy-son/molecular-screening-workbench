@@ -1,0 +1,4 @@
+screening_round,variant_id,sequence,mean_background_corrected,mean_normalized_signal,sd_normalized_signal,cv_normalized_signal,n_measurements,plate_count,expected_measurement_count,observed_measurement_count,missing_measurement_count,is_completely_missing
+1,VAR001,MKTAYIAKQRQISFVKSHFSRQDILD,124.30000000000001,0.595021541407372,,,1,1,2,1,1,False
+1,VAR002,GLSDGEWQLVLNVWGKVEADIPGHGQ,,,,,0,0,1,0,1,True
+2,VAR002,GLSDGEWQLVLNVWGKVEADIPGHGQ,97.95,0.4785051294577431,,,1,1,1,0,1,True
