@@ -4,7 +4,7 @@ screening_round,plate_id,well,variant_id,control_type
 1,P001,A3,,positive
 1,P001,A4,,negative
 1,P001,A5,,blank
-1,P002,B1,,sample
+1,P002,B1,VAR002,sample
 2,P002,B2,VAR002,sample
 1,P002,B3,,negative
 1,P002,B4,,blank

@@ -159,7 +159,7 @@ screening_round
 
 このLearning PathはDataFrame、欠損処理、GroupBy、データ結合、pivot、性能改善まで扱う。
 
-### ［BUILD］プレート測定値の補正・集約パイプライン
+### ［BUILD］プレート測定値の補正・集約パイプライン ✓
 
 標準化済みプレートCSVを読み込み、プレートごとの対照値を用いて測定値を補正し、variant単位の解析用テーブルを出力する。
 
@@ -207,17 +207,16 @@ pytestで正常系と異常系が通る
 
 履修する正式教材：
 
-1. **［RP］Plot With pandas: Python Data Visualization Basics**
-2. **［RP］Histogram Plotting in Python: NumPy, Matplotlib, Pandas & Seaborn**
-3. **［RP］Python Plotting With Matplotlib**
-4. **［RP］Using plt.scatter() to Visualize Data in Python**
+1. **［RP］Plot With pandas: Python Data Visualization Basics** ✓
+2. **［RP］Histogram Plotting in Python: NumPy, Matplotlib, Pandas & Seaborn** ✓
+3. **［RP］Python Plotting With Matplotlib**　✓
+4. **［RP］Using plt.scatter() to Visualize Data in Python**　✓
 
 Bokeh、Dash、FoliumなどのWeb可視化教材は今回は省略する。
 
 **［RP-LP］Math for Data Science**
-
-5. **［RP］Python Statistics Fundamentals: How to Describe Your Data**
-6. **［RP］NumPy, SciPy, and pandas: Correlation With Python**
+5. **［RP］Python Statistics Fundamentals: How to Describe Your Data** ✓
+6. **［RP］NumPy, SciPy, and pandas: Correlation With Python**　✓
 
 Math for Data Scienceは、記述統計、相関、線形回帰、ロジスティック回帰など五つの教材で構成されている。
 

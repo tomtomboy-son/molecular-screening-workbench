@@ -48,3 +48,7 @@ class MissingVariantCoverageError(PlateDataError):
 
 class MissingPlateLayoutQCError(PlateDataError):
     pass
+
+class DuplicateHeatmapWellError(PlateDataError):
+    pass
+
