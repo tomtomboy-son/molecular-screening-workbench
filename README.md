@@ -220,7 +220,7 @@ Bokeh、Dash、FoliumなどのWeb可視化教材は今回は省略する。
 
 Math for Data Scienceは、記述統計、相関、線形回帰、ロジスティック回帰など五つの教材で構成されている。
 
-### ［BUILD］
+### ［BUILD］✓
 
 * 96ウェル配置ヒートマップ
 * 測定値ヒストグラム
@@ -246,15 +246,15 @@ Math for Data Scienceは、記述統計、相関、線形回帰、ロジステ�
 
 **［RP-LP］Write More Pythonic Code**
 
-1. **［RP］Structuring a Python Application**
-2. **［RP］Python Type Checking**
+1. **［RP］Structuring a Python Application** ✓
+2. **［RP］Python Type Checking** ✓
 
 これらはアプリケーション構造と型ヒントを扱う正式教材である。
 
 ### Real Python外
 
-1. **［EXT］Biopython Tutorial — Sequence Input/Output**
-2. **［EXT］Biopython Tutorial — Sequence annotation objects**
+1. **［EXT］Biopython Tutorial — Sequence Input/Output** ✓
+2. **［EXT］Biopython Tutorial — Sequence annotation objects** ✓
 3. **［EXT］Biopython API — Bio.SeqUtils.ProtParam**
 
 `Bio.SeqIO.parse()`は、FASTAなどの配列ファイルを`SeqRecord`として読み込む。
@@ -268,7 +268,7 @@ Math for Data Scienceは、記述統計、相関、線形回帰、ロジステ�
 * GRAVY
 * 指定したpHにおける電荷
 
-### ［BUILD］
+### ［BUILD］✓
 
 配列ごとに以下を計算する。
 
