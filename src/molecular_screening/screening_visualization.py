@@ -254,52 +254,52 @@ def plot_replicate_scatter(
     return fig, ax
 
 
-def build_expression_activity_table(
-        variant_summary: pd.DataFrame,
-        expression_df: pd.DataFrame,
-        screening_round: int,
-)-> pd.DataFrame:
-    required_summary_columns = {
-        "variant_id",
-        "screening_round",
-        "mean_normalized_signal",
-    }
+# def build_expression_activity_table(
+#         variant_summary: pd.DataFrame,
+#         expression_df: pd.DataFrame,
+#         screening_round: int,
+# )-> pd.DataFrame:
+#     required_summary_columns = {
+#         "variant_id",
+#         "screening_round",
+#         "mean_normalized_signal",
+#     }
 
-    required_expression_columns = {
-        "variant_id",
-        "expression_level",
-    }
+#     required_expression_columns = {
+#         "variant_id",
+#         "expression_level",
+#     }
 
-    missing_summary_columns = required_summary_columns - set(variant_summary.columns)
+#     missing_summary_columns = required_summary_columns - set(variant_summary.columns)
 
-    if missing_summary_columns:
-        raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_summary_columns)}")
+#     if missing_summary_columns:
+#         raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_summary_columns)}")
 
-    missing_expression_columns = required_expression_columns - set(expression_df.columns)
+#     missing_expression_columns = required_expression_columns - set(expression_df.columns)
 
-    if missing_expression_columns:
-        raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_expression_columns)}")
+#     if missing_expression_columns:
+#         raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_expression_columns)}")
 
-    round_summary = variant_summary.loc[
-        variant_summary["screening_round"] == screening_round
-    ]
+#     round_summary = variant_summary.loc[
+#         variant_summary["screening_round"] == screening_round
+#     ]
 
-    result = round_summary.merge(
-        expression_df,
-        on="variant_id",
-        how="inner",
-    )
+#     result = round_summary.merge(
+#         expression_df,
+#         on="variant_id",
+#         how="inner",
+#     )
 
-    result = result[
-        [
-            "variant_id",
-            "expression_level",
-            "mean_normalized_signal",
-        ]
-    ].dropna()
+#     result = result[
+#         [
+#             "variant_id",
+#             "expression_level",
+#             "mean_normalized_signal",
+#         ]
+#     ].dropna()
 
 
-    return result
+#     return result
 
 
 def plot_expression_activity_scatter(

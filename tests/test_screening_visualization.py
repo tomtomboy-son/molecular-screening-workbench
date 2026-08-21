@@ -12,7 +12,6 @@ from molecular_screening.screening_visualization import (
     plot_signal_histogram,
     build_replicate_matrix,
     plot_replicate_scatter,
-    build_expression_activity_table,
     plot_expression_activity_scatter,
     plot_replicate_correlation_matirx,
     plot_plate_round_distribution,
@@ -436,63 +435,64 @@ def test_plot_replicate_scatter() -> None:
     plt.close(fig)
 
 
-def test_build_expression_activity_table() -> None:
-    variant_summary = pd.DataFrame(
-        {
-            "screening_round": [
-                1,
-                1,
-                1,
-            ],
-            "variant_id": [
-                "VAR001",
-                "VAR002",
-                "VAR003",
-            ],
-            "mean_normalized_signal": [
-                0.50,
-                0.75,
-                1.20,
-            ],
-        }
-    )
+# def test_build_expression_activity_table() -> None:
+#     variant_summary = pd.DataFrame(
+#         {
+#             "screening_round": [
+#                 1,
+#                 1,
+#                 1,
+#             ],
+#             "variant_id": [
+#                 "VAR001",
+#                 "VAR002",
+#                 "VAR003",
+#             ],
+#             "mean_normalized_signal": [
+#                 0.50,
+#                 0.75,
+#                 1.20,
+#             ],
+#         }
+#     )
 
-    expression_df = pd.DataFrame(
-        {
-            "variant_id": [
-                "VAR001",
-                "VAR002",
-                "VAR003",
-            ],
-            "expression_level": [
-                1.2,
-                0.8,
-                1.7,
-            ],
-        }
-    )
+#     expression_df = pd.DataFrame(
+#         {
+#             "variant_id": [
+#                 "VAR001",
+#                 "VAR002",
+#                 "VAR003",
+#             ],
+#             "expression_level": [
+#                 1.2,
+#                 0.8,
+#                 1.7,
+#             ],
+#         }
+#     )
 
-    result = build_expression_activity_table(
-        variant_summary,
-        expression_df,
-        screening_round=1,
-    )
+#     result = build_expression_activity_table(
+#         variant_summary,
+#         expression_df,
+#         screening_round=1,
+#     )
 
-    assert result.columns.tolist() == [
-        "variant_id",
-        "expression_level",
-        "mean_normalized_signal",
-    ]
+#     assert result.columns.tolist() == [
+#         "variant_id",
+#         "expression_level",
+#         "mean_normalized_signal",
+#     ]
 
-    assert result.loc[
-        result["variant_id"] == "VAR001",
-        "expression_level",
-    ].iloc[0]  == pytest.approx(1.2)
+#     assert result.loc[
+#         result["variant_id"] == "VAR001",
+#         "expression_level",
+#     ].iloc[0]  == pytest.approx(1.2)
 
-    assert result.loc[
-        result["variant_id"] == "VAR001",
-        "mean_normalized_signal",
-    ].iloc[0] == pytest.approx(0.50)
+#     assert result.loc[
+#         result["variant_id"] == "VAR001",
+#         "mean_normalized_signal",
+#     ].iloc[0] == pytest.approx(0.50)
+
 
 def test_plot_expression_activity_scatter() -> None:
     df = pd.DataFrame(

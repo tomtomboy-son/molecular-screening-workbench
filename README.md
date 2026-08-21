@@ -305,11 +305,11 @@ Y81F
 
 履修する正式教材：
 
-1. **［RP］Starting With Linear Regression in Python**
-2. **［RP］Logistic Regression in Python**
+1. **［RP］Starting With Linear Regression in Python**　✓
+2. **［RP］Logistic Regression in Python**　✓
 3. **［RP］Stochastic Gradient Descent Algorithm With Python and NumPy**
 
-### ［BUILD］
+### ［BUILD］✓
 
 二つの課題を作る。
 
