@@ -52,7 +52,6 @@ def load_expression_data(
 def build_expression_activity_table(
         variant_summary: pd.DataFrame,
         expression_df: pd.DataFrame,
-        screening_round: int,
 ) -> pd.DataFrame:
     required_summary_columns = {
         "variant_id",
@@ -83,19 +82,17 @@ def build_expression_activity_table(
             f"Missing required columns: {sorted(missing_expression_columns)}"
         )
 
-    round_summary = variant_summary.loc[
-        variant_summary["screening_round"] == screening_round
-    ]
-
-    result = round_summary.merge(
+    result = variant_summary.merge(
         expression_df,
         on="variant_id",
         how="inner",
+        validate="many_to_one",
     )
 
     result = result[
         [
             "variant_id",
+            "screening_round",
             "expression_level",
             "mean_normalized_signal",
         ]

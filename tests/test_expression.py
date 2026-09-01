@@ -78,11 +78,11 @@ def test_build_expression_activity_table() -> None:
     result = build_expression_activity_table(
         variant_summary,
         expression_df,
-        screening_round=1,
     )
 
     assert result.columns.tolist() == [
         "variant_id",
+        "screening_round",
         "expression_level",
         "mean_normalized_signal",
     ]
@@ -96,3 +96,11 @@ def test_build_expression_activity_table() -> None:
         result["variant_id"] == "VAR001",
         "mean_normalized_signal",
     ].iloc[0] == pytest.approx(0.50)
+
+    assert result["screening_round"].tolist() == [
+        1,
+        1,
+        1,
+    ]
+
+# %%

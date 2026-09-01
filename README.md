@@ -355,12 +355,12 @@ not_hit = 0
 
 朱博研究室との直接的な接続が弱いため、全体を完走せず、次の二つだけを履修する。
 
-1. **［RP］Splitting Datasets With scikit-learn and train_test_split()**
-2. **［RP］K-Means Clustering in Python: A Practical Guide**
+1. **［RP］Splitting Datasets With scikit-learn and train_test_split()**　✓
+2. **［RP］K-Means Clustering in Python: A Practical Guide** ✓
 
 ### Real Python外
 
-1. **［EXT］scikit-learn — Getting Started**
+1. **［EXT］scikit-learn — Getting Started**　✓
 2. **［EXT］Cross-validation: evaluating estimator performance**
 3. **［EXT］Metrics and scoring**
 4. **［EXT］Pipelines and composite estimators**
@@ -370,7 +370,7 @@ scikit-learnの`Pipeline`は、前処理とモデルを一体化し、交差検�
 
 公式文書も、前処理前に訓練データとテストデータを分割し、テストデータを`fit`に含めないことを推奨している。
 
-### ［BUILD］
+### ［BUILD］✓
 
 * ダミー予測との比較
 * 交差検証
