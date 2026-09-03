@@ -1,4 +1,6 @@
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio import SeqIO
+from pathlib import Path
 import pandas as pd
 
 VALID_AMINO_ACIDS = set("ACDEFGHIKLMNPQRSTVWY")
@@ -131,3 +133,33 @@ def validate_variant_dataframe(df: pd.DataFrame) -> None:
     if df["sequence"].isna().any():
         raise ValueError("sequence contains missing values")
 
+
+def load_variant_fasta(
+        fasta_path: Path,
+)-> pd.DataFrame:
+    if not fasta_path.exists():
+        raise FileNotFoundError(f"FASTA file not found; {fasta_path}")
+
+    records: list[dict[str, str]] = []
+    seen_ids: set[str] = set()
+
+    for record in SeqIO.parse(fasta_path, "fasta"):
+        variant_id = str(record.id).strip()
+        sequence = str(record.seq).strip().upper()
+
+        if variant_id in seen_ids:
+            raise ValueError(f"Duplicate variant_id in FASTA: {variant_id}")
+
+        validate_protein_sequence(sequence)
+        seen_ids.add(variant_id)
+        records.append(
+            {
+                "variant_id": variant_id,
+                "sequence": sequence,
+            }
+        )
+
+    if not records:
+        raise ValueError(f"FASTA file contains no sequences")
+
+    return pd.DataFrame(records)

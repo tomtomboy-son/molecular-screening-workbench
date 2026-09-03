@@ -1,15 +1,22 @@
 {
     "COLUMN_RENAME_MAP":{
         "PlateID": "plate_id",
+        "Plate ID": "plate_id",
         "Plate_Barcode": "plate_id",
         "Well_Position": "well",
         "WellId": "well",
+        "Well": "well",
         "Mutation_ID": "variant_id",
         "Variant": "variant_id",
+        "Variant ID": "variant_id",
+        "Replicate": "replicate",
         "Rep_Number": "replicate",
         "Raw_Signal": "signal",
         "Value": "signal",
+        "Signal": "signal",
+        "Control Type": "control_type",
         "Type": "control_type",
+        "Screening Round": "screening_round",
         "Round": "screening_round"
     }
 }

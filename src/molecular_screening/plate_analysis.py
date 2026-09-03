@@ -22,6 +22,8 @@ from molecular_screening.plate_reader import (
     standardize_well_coordinates,
     validate_well_ranges,
 )
+from dataclasses import dataclass
+
 
 logger = logging.getLogger(__name__)
 
@@ -179,6 +181,14 @@ FINAL_PLATE_QC_COLUMNS = [
     "missing_well_count",
     "missing_wells",
 ]
+
+@dataclass
+class PlateAnalysisResult:
+    combined: pd.DataFrame
+    normalized_samples: pd.DataFrame
+    variant_activity: pd.DataFrame
+    quality_control: pd.DataFrame
+
 
 def discover_processed_files(processed_dir: Path) -> list[Path]:
     """ find csvs """
@@ -731,7 +741,7 @@ def combine_activity_and_coverage(variant_summary_df: pd.DataFrame, variant_cove
         raise MissingRequiredColumnsError(f"Variant coverage is missing columns: {missing_coverage_columns}")
 
     validate_unique_variant_keys(variant_summary_df, "Variant activity summary")
-    validate_unique_variant_keys(variant_summary_df, "Variant coverage")
+    validate_unique_variant_keys(variant_coverage_df, "Variant coverage")
 
     coverage_keys = variant_coverage_df[VARIANT_KEYS].drop_duplicates()
 
@@ -905,40 +915,48 @@ def write_analysis_outputs(
     return (variant_output_path, plate_output_path)
 
 
+def analyze_plate_measurements(
+        processed_dir: Path,
+        expected_layout_path: Path,
+) -> PlateAnalysisResult:
+    """" Run plate analysis without sequence attachment or file export. """
+    combined_df = load_processed_plates(processed_dir)
+    expected_layout_df = load_expected_layout(expected_layout_path)
+    plate_qc_df = calculate_plate_qc(combined_df)
+    sample_with_qc_df = attach_plate_qc_to_samples(combined_df, plate_qc_df)
+    normalized_sample_df = calculate_normalized_signals(sample_with_qc_df)
+    variant_summary_df = aggregate_variant_activity(normalized_sample_df)
+    missing_wells_df = detect_missing_wells(combined_df, expected_layout_df)
+    plate_layout_qc_df = calculate_plate_layout_qc(expected_layout_df, missing_wells_df)
+    variant_coverage_df = calculate_variant_coverage(combined_df, expected_layout_df)
+    activity_coverage_df = combine_activity_and_coverage(variant_summary_df, variant_coverage_df)
+    final_plate_qc_df = combine_plate_qc_and_layout(plate_qc_df, plate_layout_qc_df)
+
+    return PlateAnalysisResult(
+        combined=combined_df,
+        normalized_samples=normalized_sample_df,
+        variant_activity=activity_coverage_df,
+        quality_control=final_plate_qc_df,
+    )
+
+
 def run_plate_analysis(
         processed_dir: Path,
         expected_layout_path: Path,
         variants_path: Path,
         analysis_dir: Path,
 ) -> tuple[Path, Path]:
-    """ Run the complete plate_analysis pipeline """
-    combined_df = load_processed_plates(processed_dir)
+    """ Run the legacy complete plate_analysis pipeline """
 
-    expected_layout_df = load_expected_layout(expected_layout_path)
+    result = analyze_plate_measurements(
+        processed_dir=processed_dir,
+        expected_layout_path=expected_layout_path,
+    )
 
     variant_reference_df = load_variant_reference(variants_path)
+    final_variant_activity_df = attach_variant_sequences(result.variant_activity, variant_reference_df)
 
-    plate_qc_df = calculate_plate_qc(combined_df)
-
-    sample_with_qc_df = attach_plate_qc_to_samples(combined_df, plate_qc_df)
-
-    normalized_sample_df = calculate_normalized_signals(sample_with_qc_df)
-
-    variant_summary_df = aggregate_variant_activity(normalized_sample_df)
-
-    missing_wells_df = detect_missing_wells(combined_df, expected_layout_df)
-
-    plate_layout_qc_df = calculate_plate_layout_qc(expected_layout_df, missing_wells_df)
-
-    variant_coverage_df = calculate_variant_coverage(combined_df, expected_layout_df)
-
-    activity_coverage_df = combine_activity_and_coverage(variant_summary_df, variant_coverage_df)
-
-    final_variant_activity_df = attach_variant_sequences(activity_coverage_df, variant_reference_df)
-
-    final_plate_qc_df = combine_plate_qc_and_layout(plate_qc_df, plate_layout_qc_df)
-
-    return write_analysis_outputs(final_variant_activity_df, final_plate_qc_df, analysis_dir)
+    return write_analysis_outputs(final_variant_activity_df, result.quality_control, analysis_dir)
 
 
 def main() -> int:

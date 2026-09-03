@@ -184,6 +184,7 @@ def process_csv_structure(input_path: Path, output_path: Path, config_path: Path
         logger.exception(f"failed to process csv")
         raise
 
+
 from molecular_screening.exceptions import PlateDataError
 
 if __name__ == "__main__":

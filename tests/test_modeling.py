@@ -424,6 +424,8 @@ def test_accuracy_can_hide_zero_hit_detection() -> None:
 
 
 def test_split_modeling_table_by_group_has_no_group_overlap():
+    n_rows = 8
+
     df = pd.DataFrame(
         {
             "variant_id": [
@@ -446,6 +448,20 @@ def test_split_modeling_table_by_group_has_no_group_overlap():
                 4,
                 4,
             ],
+            **{
+                column: [1.0] * n_rows
+                for column in FEATURE_COLUMNS
+            },
+            "corrected_activity": [
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6,
+                0.7,
+                0.8,
+            ],            
         }
     )
 
@@ -462,6 +478,8 @@ def test_split_modeling_table_by_group_has_no_group_overlap():
 
 
 def test_split_modeling_table_by_group_preserves_all_rows():
+    n_rows = 8
+
     df = pd.DataFrame(
         {
             "variant_id": [
@@ -484,6 +502,20 @@ def test_split_modeling_table_by_group_preserves_all_rows():
                 4,
                 4,
             ],
+            **{
+                column: [1.0] * n_rows
+                for column in FEATURE_COLUMNS
+            },
+            "corrected_activity": [
+                0.1,
+                0.2,
+                0.3,
+                0.4,
+                0.5,
+                0.6,
+                0.7,
+                0.8,
+            ],            
         }
     )
 

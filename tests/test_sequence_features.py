@@ -5,8 +5,10 @@ from molecular_screening.sequence_features import (
     build_variant_feature_table,
     validate_protein_sequence,
     validate_variant_dataframe,
+    load_variant_fasta,
 )
 
+from pathlib import Path
 import pytest
 import pandas as pd
 
@@ -199,3 +201,16 @@ def test_build_variant_feature_table_handles_empty_dataframe() -> None:
 
     assert result.empty
     assert list(result.columns) == FEATURE_COLUMNS
+
+
+def test_load_variant_fasta_rejects_duplicate_ids(tmp_path: Path):
+    fasta_path = tmp_path / "variants.fasta"
+    fasta_path.write_text(
+        ">V001\n"
+        "ACDEFGHIK\n"
+        ">V001\n"
+        "ACDEFGHIL\n"
+    )
+
+    with pytest.raises(ValueError, match="Duplicate variant_id"):
+        load_variant_fasta(fasta_path)
