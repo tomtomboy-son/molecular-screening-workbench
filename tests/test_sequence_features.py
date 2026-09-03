@@ -214,3 +214,22 @@ def test_load_variant_fasta_rejects_duplicate_ids(tmp_path: Path):
 
     with pytest.raises(ValueError, match="Duplicate variant_id"):
         load_variant_fasta(fasta_path)
+
+
+def test_load_variant_fasta_rejects_invalid_amino_acids(tmp_path: Path):
+    fasta_path = tmp_path / "variants.fasta"
+    fasta_path.write_text(
+        ">V001\n"
+        "ACDEFGHIX\n"
+    )
+
+    with pytest.raises(ValueError, match="invalid amino acids"):
+        load_variant_fasta(fasta_path)
+
+
+def test_load_variant_fasta_rejects_empty_file(tmp_path: Path):
+    fasta_path = tmp_path / "variants.fasta"
+    fasta_path.write_text("")
+
+    with pytest.raises(ValueError, match="contains no sequences"):
+        load_variant_fasta(fasta_path)

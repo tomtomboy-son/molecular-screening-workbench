@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import pytest
 from molecular_screening.pipeline import run_analysis
 
 
@@ -42,18 +43,36 @@ def test_run_analysis_creates_processed_assay(tmp_path: Path):
 
     layout_df.to_csv(layout_path, index=False)
 
+    sequence_path = tmp_path / "variants.fasta"
+    sequence_path.write_text(
+        ">V001\n"
+        "ACDEFGHIKLMNPQRSTVWY\n"
+    )
+
+    expression_path = tmp_path / "expression.csv"
+    expression_df = pd.DataFrame(
+        {
+            "variant_id": ["V001"],
+            "expression_level": [0.8],
+        }
+    )
+
+    expression_df.to_csv(expression_path, index=False)
+
+
     output_dir = tmp_path / "run_01"
 
     run_analysis(
-        sequence_path=tmp_path / "variants.fasta",
+        sequence_path=sequence_path,
         assay_path=assay_path,
         layout_path=layout_path,
-        expression_path=tmp_path / "expression.csv",
+        expression_path=expression_path,
         output_dir=output_dir,
     )
 
-    processed_path = output_dir / "intermediate" / "processed_plate_results.csv"
-    assert processed_path.exists()
+    modeling_df = pd.read_csv(output_dir / "intermediate" / "modeling_table.csv")
+
+
     assert(
         output_dir / "intermediate" / "processed_plate_results.csv"
     ).exists()
@@ -65,5 +84,17 @@ def test_run_analysis_creates_processed_assay(tmp_path: Path):
     assert (
         output_dir / "cleaned_assay.csv"
     ).exists()
-    
 
+    assert (
+        output_dir / "sequence_features.csv"
+    ).exists()
+
+    assert (
+        output_dir / "intermediate" / "modeling_table.csv"
+    ).exists()
+
+    assert len(modeling_df) == 1
+    assert modeling_df.loc[0, "variant_id"] == "V001"
+    assert modeling_df.loc[0, "expression"] == 0.8
+    assert modeling_df.loc[0, "corrected_activity"] == pytest.approx(50 / 90)
+    

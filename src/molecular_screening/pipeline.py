@@ -9,6 +9,13 @@ from molecular_screening.sequence_features import (
     load_variant_fasta,
     build_variant_feature_table,
 )
+from molecular_screening.expression import (
+    load_expression_data,
+    build_expression_activity_table,
+)
+from molecular_screening.modeling import (
+    build_modeling_table,
+)
 
 
 RENAME_CONFIG_PATH = Path(__file__).with_name("rename_config.json")
@@ -65,3 +72,18 @@ def run_analysis(
         sequence_features_path,
         index=False,
     )
+
+    expression_df = load_expression_data(expression_path)
+    expression_activity_df = build_expression_activity_table(
+        variant_summary=plate_result.variant_activity,
+        expression_df=expression_df,
+    )
+
+    modeling_df = build_modeling_table(
+        sequence_features_df=sequence_features_df,
+        expression_activity_df=expression_activity_df,
+    )
+
+    modeling_table_path = intermediate_dir / "modeling_table.csv"
+    modeling_df.to_csv(modeling_table_path, index=False)
+    
