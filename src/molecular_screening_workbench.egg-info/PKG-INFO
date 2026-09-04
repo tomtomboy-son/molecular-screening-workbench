@@ -171,27 +171,52 @@ screening_round
 
 1. **［RP］Introduction to pandas** ✓
 2. **［RP］Explore Your Dataset With pandas** ✓
-3. **［RP］The pandas DataFrame: Working With Data Efficiently**
-4. **［RP］Reading and Writing Files With pandas**
-5. **［RP］Data Cleaning With pandas and NumPy**
-6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies**
-7. **［RP］pandas GroupBy: Grouping Real World Data in Python**
-8. **［RP］Combining Data in pandas With concat() and merge()**
+3. **［RP］The pandas DataFrame: Working With Data Efficiently** ✓
+4. **［RP］Reading and Writing Files With pandas** ✓
+5. **［RP］Data Cleaning With pandas and NumPy** ✓
+6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies** ✓ 
+7. **［RP］pandas GroupBy: Grouping Real World Data in Python** ✓
+8. **［RP］Combining Data in pandas With concat() and merge()** ✓
 
 このLearning PathはDataFrame、欠損処理、GroupBy、データ結合、pivot、性能改善まで扱う。
 
-### ［BUILD］
+### ［BUILD］プレート測定値の補正・集約パイプライン ✓
 
-* ブランク値の減算
-* 陽性対照による正規化
-* 反復測定の平均
-* 標準偏差
-* 変動係数
-* 欠損ウェル検出
-* プレート間結合
-* 配列IDと測定値の結合
+標準化済みプレートCSVを読み込み、プレートごとの対照値を用いて測定値を補正し、variant単位の解析用テーブルを出力する。
 
-ここではまだAIを使わない。まず、実験データの各行が何を意味するかを正しく管理する。
+実装対象：
+プレートごとのブランク平均を計算する
+sample値からブランク平均を減算する
+陽性対照を基準に正規化する
+variantごとに反復測定をまとめる
+平均、標準偏差、変動係数、測定数を計算する
+期待されるウェルまたはvariantの欠損を検出する
+複数プレートを同一スキーマで結合する
+variant_idをキーに配列表と結合する
+
+完成物：
+
+src/molecular_screening/plate_analysis.py
+
+入力：
+
+data/processed/processed_*.csv
+data/reference/variants.csv
+
+出力：
+
+data/analysis/variant_activity_summary.csv
+data/analysis/plate_qc_summary.csv
+
+合格条件：
+
+対照値がプレート単位で計算される
+異なるプレートの対照を混用しない
+各variantについて平均・標準偏差・変動係数が得られる
+欠損ウェルを一覧化できる
+配列IDとの結合失敗を検出できる
+pytestで正常系と異常系が通る
+一つのコマンドで入力から出力まで生成できる
 
 ---
 
@@ -203,21 +228,20 @@ screening_round
 
 履修する正式教材：
 
-1. **［RP］Plot With pandas: Python Data Visualization Basics**
-2. **［RP］Histogram Plotting in Python: NumPy, Matplotlib, Pandas & Seaborn**
-3. **［RP］Python Plotting With Matplotlib**
-4. **［RP］Using plt.scatter() to Visualize Data in Python**
+1. **［RP］Plot With pandas: Python Data Visualization Basics** ✓
+2. **［RP］Histogram Plotting in Python: NumPy, Matplotlib, Pandas & Seaborn** ✓
+3. **［RP］Python Plotting With Matplotlib**　✓
+4. **［RP］Using plt.scatter() to Visualize Data in Python**　✓
 
 Bokeh、Dash、FoliumなどのWeb可視化教材は今回は省略する。
 
 **［RP-LP］Math for Data Science**
-
-5. **［RP］Python Statistics Fundamentals: How to Describe Your Data**
-6. **［RP］NumPy, SciPy, and pandas: Correlation With Python**
+5. **［RP］Python Statistics Fundamentals: How to Describe Your Data** ✓
+6. **［RP］NumPy, SciPy, and pandas: Correlation With Python**　✓
 
 Math for Data Scienceは、記述統計、相関、線形回帰、ロジスティック回帰など五つの教材で構成されている。
 
-### ［BUILD］
+### ［BUILD］✓
 
 * 96ウェル配置ヒートマップ
 * 測定値ヒストグラム
@@ -243,15 +267,15 @@ Math for Data Scienceは、記述統計、相関、線形回帰、ロジステ�
 
 **［RP-LP］Write More Pythonic Code**
 
-1. **［RP］Structuring a Python Application**
-2. **［RP］Python Type Checking**
+1. **［RP］Structuring a Python Application** ✓
+2. **［RP］Python Type Checking** ✓
 
 これらはアプリケーション構造と型ヒントを扱う正式教材である。
 
 ### Real Python外
 
-1. **［EXT］Biopython Tutorial — Sequence Input/Output**
-2. **［EXT］Biopython Tutorial — Sequence annotation objects**
+1. **［EXT］Biopython Tutorial — Sequence Input/Output** ✓
+2. **［EXT］Biopython Tutorial — Sequence annotation objects** ✓
 3. **［EXT］Biopython API — Bio.SeqUtils.ProtParam**
 
 `Bio.SeqIO.parse()`は、FASTAなどの配列ファイルを`SeqRecord`として読み込む。
@@ -265,7 +289,7 @@ Math for Data Scienceは、記述統計、相関、線形回帰、ロジステ�
 * GRAVY
 * 指定したpHにおける電荷
 
-### ［BUILD］
+### ［BUILD］✓
 
 配列ごとに以下を計算する。
 
@@ -302,11 +326,11 @@ Y81F
 
 履修する正式教材：
 
-1. **［RP］Starting With Linear Regression in Python**
-2. **［RP］Logistic Regression in Python**
+1. **［RP］Starting With Linear Regression in Python**　✓
+2. **［RP］Logistic Regression in Python**　✓
 3. **［RP］Stochastic Gradient Descent Algorithm With Python and NumPy**
 
-### ［BUILD］
+### ［BUILD］✓
 
 二つの課題を作る。
 
@@ -352,12 +376,12 @@ not_hit = 0
 
 朱博研究室との直接的な接続が弱いため、全体を完走せず、次の二つだけを履修する。
 
-1. **［RP］Splitting Datasets With scikit-learn and train_test_split()**
-2. **［RP］K-Means Clustering in Python: A Practical Guide**
+1. **［RP］Splitting Datasets With scikit-learn and train_test_split()**　✓
+2. **［RP］K-Means Clustering in Python: A Practical Guide** ✓
 
 ### Real Python外
 
-1. **［EXT］scikit-learn — Getting Started**
+1. **［EXT］scikit-learn — Getting Started**　✓
 2. **［EXT］Cross-validation: evaluating estimator performance**
 3. **［EXT］Metrics and scoring**
 4. **［EXT］Pipelines and composite estimators**
@@ -367,7 +391,7 @@ scikit-learnの`Pipeline`は、前処理とモデルを一体化し、交差検�
 
 公式文書も、前処理前に訓練データとテストデータを分割し、テストデータを`fit`に含めないことを推奨している。
 
-### ［BUILD］
+### ［BUILD］✓
 
 * ダミー予測との比較
 * 交差検証

@@ -1,0 +1,2 @@
+[console_scripts]
+molecular-screen = molecular_screening.cli:main
