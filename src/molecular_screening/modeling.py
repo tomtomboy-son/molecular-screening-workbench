@@ -1,4 +1,5 @@
 import pandas as pd
+from dataclasses import dataclass
 from molecular_screening.sequence_features import AMINO_ACIDS
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -46,6 +47,15 @@ MODELING_COLUMNS = [
     *FEATURE_COLUMNS,
     "corrected_activity",
 ]
+
+
+@dataclass
+class ModelingResult:
+    regression_model: Pipeline
+    classification_model: Pipeline
+    regression_cv: pd.DataFrame
+    classification_cv: pd.DataFrame
+    hit_threshold: float
 
 
 def prepare_regression_data(
@@ -440,3 +450,56 @@ def validate_modeling_table(
         raise ValueError(f"Modeling table is missing columns: {sorted(missing_columns)}")
 
     validate_feature_columns()
+
+
+def run_modeling_analysis(
+        df: pd.DataFrame,
+        hit_threshold: float=0.5,
+        n_splits: int=3,
+) -> ModelingResult:
+    validate_modeling_table(df)
+
+    unique_group_count = df[GROUP_COLUMN].nunique()
+
+    if unique_group_count < n_splits:
+        raise ValueError(
+            "Not enough screening rounds for cross-validation: "
+            f"found {unique_group_count}, need at least {n_splits}"
+            )
+
+    X_regression, y_regression = prepare_regression_data(df)
+    regression_model = make_linear_pipeline()
+    regression_cv = cross_validate_regression(
+        regression_model,
+        df,
+        n_splits=n_splits,
+    )
+    regression_model.fit(X_regression, y_regression)
+
+    X_classification, y_classification = prepare_classification_data(
+        df,
+        threshold=hit_threshold,
+    )
+
+    if y_classification.nunique() < 2:
+        raise ValueError("Classification requires both hit and non-hit variants")
+
+    classification_model = make_logistic_pipeline()
+    classification_cv = cross_validate_classification(
+        classification_model,
+        df,
+        threshold=hit_threshold,
+        n_splits=n_splits,
+    )
+    classification_model.fit(
+        X_classification,
+        y_classification,
+    )
+
+    return ModelingResult(
+        regression_model=regression_model,
+        classification_model=classification_model,
+        regression_cv=regression_cv,
+        classification_cv=classification_cv,
+        hit_threshold=hit_threshold,
+    )

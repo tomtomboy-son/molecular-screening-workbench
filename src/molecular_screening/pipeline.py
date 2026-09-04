@@ -1,4 +1,6 @@
 from pathlib import Path
+import pandas as pd
+from dataclasses import dataclass
 from molecular_screening.plate_reader import (
     process_csv_structure,
 )
@@ -14,11 +16,19 @@ from molecular_screening.expression import (
     build_expression_activity_table,
 )
 from molecular_screening.modeling import (
+    ModelingResult,
     build_modeling_table,
+    run_modeling_analysis,
 )
 
 
 RENAME_CONFIG_PATH = Path(__file__).with_name("rename_config.json")
+
+
+@dataclass
+class AnalysisResult:
+    modeling_table: pd.DataFrame
+    modeling: ModelingResult
 
 
 def run_analysis(
@@ -27,7 +37,9 @@ def run_analysis(
     layout_path: Path,
     expression_path: Path,
     output_dir: Path,
-) -> None:
+    hit_threshold: float=0.5,
+    cv_splits: int=3,
+) -> AnalysisResult:
     """ Run the complete molecular screening analysis pipeline. """
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -86,4 +98,17 @@ def run_analysis(
 
     modeling_table_path = intermediate_dir / "modeling_table.csv"
     modeling_df.to_csv(modeling_table_path, index=False)
-    
+
+    modeling_result = run_modeling_analysis(
+        modeling_df,
+        hit_threshold=hit_threshold,
+        n_splits=cv_splits,
+    )
+
+    return AnalysisResult(
+        modeling_table=modeling_df,
+        modeling=modeling_result,
+    )
+
+
+

@@ -21,6 +21,7 @@ from molecular_screening.modeling import (
     make_linear_pipeline,
     make_logistic_pipeline,
     validate_no_group_overlap,
+    run_modeling_analysis,
 )
 from molecular_screening.sequence_features import AMINO_ACIDS
 import pytest
@@ -724,3 +725,29 @@ def test_pipeline_scaler_fits_training_data_only(
         scaler.mean_,
         X_train.mean().to_numpy(),
     )
+
+
+def test_run_modeling_analysis_returns_fitted_models_and_cv_scores(
+        modeling_df: pd.DataFrame,
+) -> None:
+    result = run_modeling_analysis(
+        modeling_df,
+        hit_threshold=0.5,
+        n_splits=3,
+    )
+
+    assert len(result.regression_cv) == 3
+    assert len(result.classification_cv) == 3
+
+    assert list(result.regression_cv.columns) == [
+        "mae",
+        "rmse",
+        "r2",
+    ]
+    assert list(result.classification_cv.columns) == [
+        "accuracy",
+        "precision",
+        "recall",
+    ]
+
+    assert result.hit_threshold == pytest.approx(0.5)
