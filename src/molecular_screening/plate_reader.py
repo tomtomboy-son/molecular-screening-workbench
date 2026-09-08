@@ -75,6 +75,17 @@ def validate_well_ranges(well_series: pd.Series) -> None:
 
 def validate_signal_values(signal_series: pd.Series) -> pd.Series:
     """mission: ensures the signal column contains only numbers"""
+    missing_mask = signal_series.isna()
+    if missing_mask.any():
+        missing_rows = (
+            signal_series.index[missing_mask]
+            .to_series()
+            .add(2)
+            .tolist()
+        )
+
+        raise InvalidSignalError(f"Missing signal values at rows: {missing_rows}")
+
     numeric_parsed = pd.to_numeric(signal_series, errors="coerce")
     invalid_mask = signal_series.notna() & numeric_parsed.isna()
 
@@ -91,6 +102,7 @@ def validate_signal_values(signal_series: pd.Series) -> pd.Series:
         raise InvalidSignalError("\n".join(error_lines))
 
     return numeric_parsed
+
 
 def validate_unique_entries(df: pd.DataFrame) -> None:
     """mission: rejects duplicate rows sharing the exact same plate, well, and round"""

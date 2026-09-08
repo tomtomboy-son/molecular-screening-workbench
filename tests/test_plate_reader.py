@@ -124,6 +124,20 @@ def test_non_numeric_signal_raises_expected_exception(
     ):
         clean_dataframe_values(invalid_df)
 
+
+def test_missing_signal_raises_expected_exception(
+        valid_df: pd.DataFrame,
+) -> None:
+    invalid_df = valid_df.copy()
+    invalid_df.loc[0, "signal"] = None
+
+    with pytest.raises(
+        InvalidSignalError,
+        match="Missing signal",
+    ):
+        clean_dataframe_values(invalid_df)
+        
+
 def test_signal_accepts_various_numeric_types(valid_df: pd.DataFrame) -> None:
     invalid_df = valid_df.copy()
     invalid_df["signal"] = pd.Series(

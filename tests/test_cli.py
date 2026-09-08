@@ -42,7 +42,7 @@ def write_smoke_test_inputs(
             ("A5", high_variant, high_signal, "sample"),
         ]
 
-        for well, variant_id, signal, control_type, in wells:
+        for well, variant_id, signal, control_type in wells:
             assay_rows.append(
                 {
                     "Plate ID": plate_id,
@@ -220,7 +220,7 @@ def test_main_uses_default_modeling_options(
         hit_threshold: float,
         cv_splits: int,
     ) -> None:
-        captured["hit_threhold"] = hit_threshold
+        captured["hit_threshold"] = hit_threshold
         captured["cv_splits"] = cv_splits
 
     monkeypatch.setattr(
@@ -251,8 +251,8 @@ def test_main_uses_default_modeling_options(
     exit_code = cli.main()
 
     assert exit_code == 0
-    assert captured["hit_threhold"] == pytest.approx(0.5)
-    assert captured["cv_splits"] == pytest.approx(3)
+    assert captured["hit_threshold"] == pytest.approx(0.5)
+    assert captured["cv_splits"] == 3
 
 
 def test_installed_cli_runs_complete_analysis(

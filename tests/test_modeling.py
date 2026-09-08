@@ -751,3 +751,10 @@ def test_run_modeling_analysis_returns_fitted_models_and_cv_scores(
     ]
 
     assert result.hit_threshold == pytest.approx(0.5)
+
+    X = modeling_df[FEATURE_COLUMNS]
+    regression_predictions = result.regression_model.predict(X)
+    classification_predictions = result.classification_model.predict(X)
+
+    assert len(regression_predictions) == len(modeling_df)
+    assert len(classification_predictions) == len(modeling_df)

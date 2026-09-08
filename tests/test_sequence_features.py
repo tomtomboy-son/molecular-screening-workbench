@@ -3,6 +3,7 @@ from molecular_screening.sequence_features import (
     extract_substitutions,
     build_variant_feature_record,
     build_variant_feature_table,
+    calculate_sequence_features,
     validate_protein_sequence,
     validate_variant_dataframe,
     load_variant_fasta,
@@ -233,3 +234,26 @@ def test_load_variant_fasta_rejects_empty_file(tmp_path: Path):
 
     with pytest.raises(ValueError, match="contains no sequences"):
         load_variant_fasta(fasta_path)
+
+
+def test_calculate_sequence_features_known_sequence() -> None:
+    sequence = "ACDEFGHIKLMNPQRSTVWY"
+    result = calculate_sequence_features(sequence)
+
+    assert result["sequence_length"] == 20
+    assert result["molecular_weight"] == pytest.approx(
+        2395.7134,
+        rel=1e-6,
+    )
+    assert result["aromaticity"] == pytest.approx(0.15)
+    assert result["gravy"] == pytest.approx(-0.49)
+    assert result["charge_at_ph7"] == pytest.approx(
+        -0.12493,
+        abs=1e-4,
+    )
+    
+    total_fraction = sum(
+        result[f"fraction_{amino_acid}"]
+        for amino_acid in sequence
+    )
+    assert total_fraction == pytest.approx(1.0)

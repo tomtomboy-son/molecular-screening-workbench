@@ -141,7 +141,22 @@ def test_run_analysis_outputs_and_runs_modeling(tmp_path: Path):
     )
 
     modeling_df = pd.read_csv(output_dir / "intermediate" / "modeling_table.csv")
+    expected_activity = {
+        "V001": 0.2,
+        "V002": 0.8,
+        "V003": 0.3,
+        "V004": 0.9,
+        "V005": 0.4,
+        "V006": 1.0,
+    }
 
+    for variant_id, expected in expected_activity.items():
+        actual = modeling_df.loc[
+            modeling_df["variant_id"] == variant_id,
+            "corrected_activity",
+        ].iloc[0]
+
+        assert actual == pytest.approx(expected)
 
     assert(
         output_dir / "intermediate" / "processed_plate_results.csv"
