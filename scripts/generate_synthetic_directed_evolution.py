@@ -170,27 +170,27 @@ def build_plate_data() -> tuple[
                 }
             )
 
-            round_variants = [
-                spec
-                for spec in VARIANT_SPECS
-                if spec[1] == screening_round
-            ]
+        round_variants = [
+            spec
+            for spec in VARIANT_SPECS
+            if spec[1] == screening_round
+        ]
 
-            for (
-                variant_id,
-                _,
-                mutations,
-                target_activity,
-                expression,
-            ) in round_variants:
+        for (
+            variant_id,
+            _,
+            mutations,
+            target_activity,
+            expression,
+        ) in round_variants:
 
-                for replicate, offset in enumerate(
-                    REPLICATE_OFFSETS,
-                    start=1,
-                ):
-                    normalized_activity = target_activity + offset
+            for replicate, offset in enumerate(
+                REPLICATE_OFFSETS,
+                start=1,
+            ):
+                normalized_activity = target_activity + offset
 
-                raw_signal = 10.0 + normalized_activity + 200.0
+                raw_signal = 10.0 + normalized_activity * 200.0
 
                 well = WELL_ORDER[well_index]
                 well_index += 1
