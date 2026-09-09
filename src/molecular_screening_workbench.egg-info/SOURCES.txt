@@ -33,6 +33,7 @@ src/playground/scikit.py
 src/playground/show_visualization.py
 src/playground/towns.py
 src/playground/untitled.py
+tests/test_cli.py
 tests/test_expression.py
 tests/test_modeling.py
 tests/test_pipeline.py
