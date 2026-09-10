@@ -1,0 +1,4 @@
+screening_round,plate_id,blank_mean,positive_mean,negative_mean,positive_corrected,n_blank,n_positive,n_negative,n_sample,expected_well_count,observed_expected_well_count,missing_well_count,missing_wells
+0,P000,10.0,210.0,20.0,200.0,1,1,1,2,5,5,0,
+1,P001,10.0,210.0,20.0,200.0,1,1,1,24,27,27,0,
+2,P002,10.0,210.0,20.0,200.0,1,1,1,16,19,19,0,

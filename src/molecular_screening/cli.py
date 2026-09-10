@@ -6,7 +6,7 @@ from molecular_screening.pipeline import run_analysis
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="molecular_screen",
+        prog="molecular-screen",
         description="Reproducible molecular screening analysis",
     )
 
