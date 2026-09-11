@@ -20,6 +20,9 @@ from molecular_screening.modeling import (
     build_modeling_table,
     run_modeling_analysis,
 )
+from molecular_screening.candidate_ranking import (
+    build_candidate_feature_table,
+)
 
 
 RENAME_CONFIG_PATH = Path(__file__).with_name("rename_config.json")
