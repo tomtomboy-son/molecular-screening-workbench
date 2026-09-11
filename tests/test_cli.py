@@ -141,6 +141,8 @@ def test_main_routes_analyze_arguments(
             output_dir: Path,
             hit_threshold: float,
             cv_splits:int,
+            candidate_sequence_path: Path | None=None,
+            candidate_expression_path: Path | None=None,
     ) -> None:
         captured.update(
             {
@@ -151,6 +153,8 @@ def test_main_routes_analyze_arguments(
                 "output_dir": output_dir,
                 "hit_threshold": hit_threshold,
                 "cv_splits": cv_splits,
+                "candidate_sequence_path": candidate_sequence_path,
+                "candidate_expression_path": candidate_expression_path,
             }
         )
 
@@ -166,6 +170,8 @@ def test_main_routes_analyze_arguments(
     layout_path = tmp_path / "expected_layout.csv"
     expression_path = tmp_path / "expression.csv"
     output_dir = tmp_path / "run_01"
+    candidate_sequence_path = tmp_path / "candidates.fasta"
+    candidate_expression_path = tmp_path / "candidate_expression.csv"
 
     monkeypatch.setattr(
         sys, # type: ignore
@@ -187,6 +193,10 @@ def test_main_routes_analyze_arguments(
             "0.7",
             "--cv-splits",
             "4",
+            "--candidates",
+            str(candidate_sequence_path),
+            "--candidate-expression",
+            str(candidate_expression_path),
         ],
     )
 
@@ -202,6 +212,8 @@ def test_main_routes_analyze_arguments(
         "output_dir": output_dir,
         "hit_threshold": 0.7,
         "cv_splits": 4,
+        "candidate_sequence_path": candidate_sequence_path,
+        "candidate_expression_path": candidate_expression_path,
     }
 
 
@@ -219,9 +231,13 @@ def test_main_uses_default_modeling_options(
         output_dir: Path,
         hit_threshold: float,
         cv_splits: int,
+        candidate_sequence_path: Path | None,
+        candidate_expression_path: Path | None,
     ) -> None:
         captured["hit_threshold"] = hit_threshold
         captured["cv_splits"] = cv_splits
+        captured["candidate_sequence_path"] = candidate_sequence_path
+        captured["candidate_expression_path"] = candidate_expression_path
 
     monkeypatch.setattr(
         cli,
@@ -253,6 +269,8 @@ def test_main_uses_default_modeling_options(
     assert exit_code == 0
     assert captured["hit_threshold"] == pytest.approx(0.5)
     assert captured["cv_splits"] == 3
+    assert captured["candidate_sequence_path"] is None
+    assert captured["candidate_expression_path"] is None
 
 
 def test_installed_cli_runs_complete_analysis(
