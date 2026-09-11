@@ -48,6 +48,71 @@ VARIANT_SPECS = [
     ("R2_08", 2, ["H31N", "D45N", "K16E"], 0.47, 0.74),
 ]
 
+R3_CANDIDATE_SPECS = [
+    # variant_id, mutations, expression
+
+    (
+        "R3_01",
+        ["V15I", "H31N", "A42V","D45N"],
+        0.99,
+    (
+        "R3_02",
+        ["V15I", "A42V", "H31N", "T46S"],
+        0.97,
+    ),
+    (
+        "R3_03",
+        ["V15I", "A42V", "D45N", "T46S"],
+        0.98,
+    ),
+    (
+        "R3_04",
+        ["H31N", "D45N", "A42V", "T46S"],
+        0.98,
+    ),
+    (
+        "R3_05",
+        ["H31N", "D45N", "V15I", "Y30F"],
+        0.96,
+    ),
+    (
+        "R3_06",
+        ["V15I", "A42V", "H31N", "Y30F"],
+        0.95,
+    ),
+    (
+        "R3_07",
+        ["V15I", "A42V", "D45N", "Q33L"],
+        0.91,
+    ),
+    (
+        "R3_08",
+        ["H31N", "D45N", "A42V", "Y30F"],
+        0.96,
+    ),
+    (
+        "R3_09",
+        ["V15I", "H31N", "D45N", "K16E"],
+        0.74,
+    ),
+    (
+        "R3_10",
+        ["V15I", "A42V", "T46S", "Y30F"],
+        0.93,
+    ),
+    (
+        "R3_11",
+        ["H31N", "D45N", "Q33L", "T46S"],
+        0.89,
+    ),
+    (
+        "R3_12",
+        ["V15I", "H31N", "A42V", "Q33L"],
+        0.92,
+    ),
+    ),
+]
+
 WELL_ORDER = [
     f"{row}{column}"
     for row in "ABCDEFGH"
@@ -222,6 +287,53 @@ def build_plate_data() -> tuple[
         pd.DataFrame(layout_rows),
     )
 
+def write_candidate_fasta() -> None:
+    fasta_lines: list[str] = []
+
+    for (
+        variant_id,
+        mutations,
+        expression,
+    ) in R3_CANDIDATE_SPECS: # type: ignore
+        sequence = apply_mutations(
+            PARENT_SEQUENCE,
+            mutations,
+        )
+
+        fasta_lines.extend(
+            [
+                f">{variant_id}",
+                sequence,
+            ]
+        )
+
+    (
+        OUTPUT_DIR / "candidates.fasta"
+    ).write_text(
+        "\n".join(fasta_lines) + "\n"
+    )
+
+
+def write_candidate_expression() -> None:
+    rows = []
+
+    for (
+        variant_id,
+        mutations,
+        expression,
+    ) in R3_CANDIDATE_SPECS: # type: ignore
+        rows.append(
+            {
+                "variant_id": variant_id,
+                "expression_level": expression,
+            }
+        )
+
+    pd.DataFrame(rows).to_csv(
+        OUTPUT_DIR / "candidate_expression.csv",
+        index=False,
+    )
+
 
 def main() -> None:
     OUTPUT_DIR.mkdir(
@@ -242,6 +354,9 @@ def main() -> None:
         OUTPUT_DIR / "expected_layout.csv",
         index=False,
     )
+
+    write_candidate_fasta()
+    write_candidate_expression()
 
     print(f"Wrote synthetic dataset to: {OUTPUT_DIR}")
     print(f"Variants: {len(VARIANT_SPECS)}")
