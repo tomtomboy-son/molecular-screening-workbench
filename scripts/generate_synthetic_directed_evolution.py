@@ -55,6 +55,7 @@ R3_CANDIDATE_SPECS = [
         "R3_01",
         ["V15I", "H31N", "A42V","D45N"],
         0.99,
+    ),
     (
         "R3_02",
         ["V15I", "A42V", "H31N", "T46S"],
@@ -109,7 +110,6 @@ R3_CANDIDATE_SPECS = [
         "R3_12",
         ["V15I", "H31N", "A42V", "Q33L"],
         0.92,
-    ),
     ),
 ]
 
@@ -294,7 +294,7 @@ def write_candidate_fasta() -> None:
         variant_id,
         mutations,
         expression,
-    ) in R3_CANDIDATE_SPECS: # type: ignore
+    ) in R3_CANDIDATE_SPECS: 
         sequence = apply_mutations(
             PARENT_SEQUENCE,
             mutations,
@@ -321,7 +321,7 @@ def write_candidate_expression() -> None:
         variant_id,
         mutations,
         expression,
-    ) in R3_CANDIDATE_SPECS: # type: ignore
+    ) in R3_CANDIDATE_SPECS: 
         rows.append(
             {
                 "variant_id": variant_id,
@@ -360,9 +360,8 @@ def main() -> None:
 
     print(f"Wrote synthetic dataset to: {OUTPUT_DIR}")
     print(f"Variants: {len(VARIANT_SPECS)}")
-    print(f"Assay raws: {len(assay_df)}")
-    print(f"Layout raws: {len(layout_df)}")
-
+    print(f"Assay rows: {len(assay_df)}")
+    print(f"Layout rows: {len(layout_df)}")
 
 if __name__ == "__main__":
     main()
