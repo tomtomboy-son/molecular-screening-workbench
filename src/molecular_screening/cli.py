@@ -69,6 +69,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of group-aware cross-validation folds",
     )
 
+    analyze_parser.add_argument(
+        "--candidates",
+        type=Path,
+        help="FASTA file containing unmeasured candidates",
+    )
+
+    analyze_parser.add_argument(
+        "--candidate-expression",
+        type=Path,
+        help="Expression CSV for unmeasured candidates",
+    )
+
     return parser
 
 
@@ -85,6 +97,8 @@ def main() -> int:
             output_dir=args.output,
             hit_threshold=args.hit_threshold,
             cv_splits=args.cv_splits,
+            candidate_sequence_path=args.candidates,
+            candidate_expression_path=args.candidate_expression,
         )
 
         return 0

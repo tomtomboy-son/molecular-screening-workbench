@@ -22,6 +22,8 @@ from molecular_screening.modeling import (
 )
 from molecular_screening.candidate_ranking import (
     build_candidate_feature_table,
+    predict_candidate_socres,
+    rank_candidate_scores,
 )
 
 
@@ -42,6 +44,8 @@ def run_analysis(
     output_dir: Path,
     hit_threshold: float=0.5,
     cv_splits: int=3,
+    candidate_sequence_path: Path | None=None,
+    candidate_expression_path: Path | None=None,
 ) -> AnalysisResult:
     """ Run the complete molecular screening analysis pipeline. """
 
@@ -107,6 +111,35 @@ def run_analysis(
         hit_threshold=hit_threshold,
         n_splits=cv_splits,
     )
+
+    if (
+        candidate_sequence_path is None
+    ) != (
+        candidate_expression_path is None
+    ):
+        raise ValueError("Candidate sequence and expression paths must be privided together")
+
+    if (
+        candidate_sequence_path is not None
+        and candidate_expression_path is not None
+    ):
+        candidate_table = (
+            build_candidate_feature_table(
+                candidate_fasta_path=candidate_sequence_path,
+                candidate_expression_path=candidate_expression_path,
+                parent_sequence=parent_sequence,
+            )
+        )
+
+        scored_candidates = predict_candidate_socres(
+            candidate_table,
+            modeling_result,
+        )
+
+        ranked_candidates = rank_candidate_scores(scored_candidates)
+
+        ranked_candidates.to_csv(output_dir / "ranked_candidates.csv", index=False)
+        
 
     return AnalysisResult(
         modeling_table=modeling_df,

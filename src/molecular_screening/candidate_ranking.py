@@ -9,6 +9,7 @@ from molecular_screening.expression import (
 )
 from molecular_screening.modeling import (
     FEATURE_COLUMNS,
+    ModelingResult,
 )
 
 
@@ -59,3 +60,82 @@ def build_candidate_feature_table(
             *FEATURE_COLUMNS,
         ]
     ].copy()
+
+
+def predict_candidate_socres(
+        candidate_table: pd.DataFrame,
+        modeling_result: ModelingResult,
+) -> pd.DataFrame:
+    expected_columns = {
+        "variant_id",
+        *FEATURE_COLUMNS,
+    }
+
+    missing_columns = expected_columns - set(candidate_table.columns)
+
+    if missing_columns:
+        raise ValueError(
+            "Candidate talbe is missing required columns"
+            f"{sorted(missing_columns)}"
+        )
+
+    X_candidates = candidate_table[FEATURE_COLUMNS].copy()
+
+    if X_candidates.isna().any().any():
+        raise ValueError("Candidate feature table contains missing values")
+
+    predicted_activity = modeling_result.regression_model.predict(X_candidates)
+
+    classification_model = modeling_result.classification_model
+
+    class_labels = classification_model.named_steps["model"].classes_
+
+    hit_class_index = list(class_labels).index(1)
+
+    hit_probability = classification_model.predict_proba(X_candidates)[:, hit_class_index]
+
+    result = candidate_table.copy()
+
+    result["predicted_activity"] = predicted_activity # type: ignore
+
+    result["hit_probability"] = hit_probability
+
+    return result
+
+
+def rank_candidate_scores(
+        scored_candidates: pd.DataFrame,
+) -> pd.DataFrame:
+    required_columns = {
+        "variant_id",
+        "predicted_activity",
+        "hit_probability",
+    }
+
+    missing_columns = required_columns - set(scored_candidates.columns)
+
+    if missing_columns:
+        raise ValueError(f"Scored candidate table has missing columns {sorted(missing_columns)}")
+
+    ranked = (
+        scored_candidates
+        .sort_values(
+            by=[
+                "predicted_activity",
+                "hit_probability",
+            ],
+            ascending=[
+                False,
+                False,
+            ],
+            kind="stable",
+        ).reset_index(drop=True)
+    )
+
+    ranked.insert(
+        0,
+        "rank",
+        range(1, len(ranked) + 1),
+    )
+
+    return ranked
