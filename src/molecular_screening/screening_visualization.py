@@ -268,6 +268,8 @@ def plot_expression_activity_scatter(
     ax.set_ylabel("Mean normalized_activity")
     ax.set_title("Expression vs. activity")
 
+    fig.get_tight_layout()
+
     return fig, ax
 
 
@@ -678,4 +680,34 @@ def save_latest_plate_heatmap(
     finally:
         plt.close(fig)
 
+
+def save_activity_vs_expression(
+        expression_activity_df: pd.DataFrame,
+        output_dir: Path,
+        dpi: int=300,
+) -> Path:
+    required_columns = {
+        "expression_level",
+        "mean_normalized_signal",
+    }
+
+    missing_columns = required_columns - set(expression_activity_df.columns)
+
+    if missing_columns:
+        raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_columns)}")
+
+    if expression_activity_df.empty:
+        raise ValueError("Cannot plo expression vs activity from empty data")
+
+    fig, _ = plot_expression_activity_scatter(expression_activity_df)
+
+    try:
+        return save_figure(
+            fig,
+            output_dir,
+            "activity_vs_expression.png",
+            dpi=dpi,
+        )
+    finally:
+        plt.close(fig)
 

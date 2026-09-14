@@ -27,6 +27,7 @@ from molecular_screening.candidate_ranking import (
 )
 from molecular_screening.screening_visualization import (
     save_latest_plate_heatmap,
+    save_activity_vs_expression,
 )
 
 
@@ -104,6 +105,11 @@ def run_analysis(
     expression_activity_df = build_expression_activity_table(
         variant_summary=plate_result.variant_activity,
         expression_df=expression_df,
+    )
+
+    save_activity_vs_expression(
+        expression_activity_df=expression_activity_df,
+        output_dir=output_dir,
     )
 
     modeling_df = build_modeling_table(

@@ -21,6 +21,7 @@ from molecular_screening.screening_visualization import (
     save_figure,
     get_replicate_pairs,
     save_latest_plate_heatmap,
+    save_activity_vs_expression,
 )
 
 from molecular_screening.exceptions import(
@@ -780,4 +781,37 @@ def test_save_latest_plate_heatmap(
 
     assert output_path.exists()
     assert output_path.name == "plate_heatmap.png"
+    assert output_path.stat().st_size > 0
+
+
+def test_save_activity_vs_expression(
+        tmp_path: Path,
+) -> None:
+    df = pd.DataFrame(
+        {
+            "variant_id": [
+                "V1",
+                "V2",
+                "V3",
+            ],
+            "expression_level": [
+                0.70,
+                0.85,
+                0.95,
+            ],
+            "mean_normalized_signal": [
+                0.30,
+                0.60,
+                0.90,
+            ],
+        }
+    )
+
+    output_path = save_activity_vs_expression(
+        expression_activity_df=df,
+        output_dir=tmp_path,
+    )
+
+    assert output_path.exists()
+    assert output_path.name == "activity_vs_expression.png"
     assert output_path.stat().st_size > 0
