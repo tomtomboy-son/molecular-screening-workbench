@@ -25,6 +25,9 @@ from molecular_screening.candidate_ranking import (
     predict_candidate_socres,
     rank_candidate_scores,
 )
+from molecular_screening.screening_visualization import (
+    save_latest_plate_heatmap,
+)
 
 
 RENAME_CONFIG_PATH = Path(__file__).with_name("rename_config.json")
@@ -77,6 +80,11 @@ def run_analysis(
     plate_result.normalized_samples.to_csv(
         cleaned_assay_path,
         index=False,
+    )
+
+    save_latest_plate_heatmap(
+        normalized_samples=plate_result.normalized_samples,
+        output_dir=output_dir,
     )
 
     variant_df = load_variant_fasta(sequence_path)

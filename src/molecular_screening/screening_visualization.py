@@ -2,7 +2,6 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-import pytest
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -252,54 +251,6 @@ def plot_replicate_scatter(
     ax.set_title("Replicate reproducibility")
 
     return fig, ax
-
-
-# def build_expression_activity_table(
-#         variant_summary: pd.DataFrame,
-#         expression_df: pd.DataFrame,
-#         screening_round: int,
-# )-> pd.DataFrame:
-#     required_summary_columns = {
-#         "variant_id",
-#         "screening_round",
-#         "mean_normalized_signal",
-#     }
-
-#     required_expression_columns = {
-#         "variant_id",
-#         "expression_level",
-#     }
-
-#     missing_summary_columns = required_summary_columns - set(variant_summary.columns)
-
-#     if missing_summary_columns:
-#         raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_summary_columns)}")
-
-#     missing_expression_columns = required_expression_columns - set(expression_df.columns)
-
-#     if missing_expression_columns:
-#         raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_expression_columns)}")
-
-#     round_summary = variant_summary.loc[
-#         variant_summary["screening_round"] == screening_round
-#     ]
-
-#     result = round_summary.merge(
-#         expression_df,
-#         on="variant_id",
-#         how="inner",
-#     )
-
-#     result = result[
-#         [
-#             "variant_id",
-#             "expression_level",
-#             "mean_normalized_signal",
-#         ]
-#     ].dropna()
-
-
-#     return result
 
 
 def plot_expression_activity_scatter(
@@ -678,3 +629,52 @@ def export_screening_report(
     artifacts["outlier_candidates"] = outlier_path
 
     return artifacts
+
+
+def save_latest_plate_heatmap(
+        normalized_samples: pd.DataFrame,
+        output_dir: Path,
+        dpi: int=300,
+) -> Path:
+    if normalized_samples.empty:
+        raise ValueError("Cannot plot heatmap from empty sample data")
+
+    latest_round = int(normalized_samples["screening_round"].max())
+
+    latest_round_df = normalized_samples.loc[
+        normalized_samples["screening_round"] == latest_round
+    ]
+
+    plate_ids = latest_round_df["plate_id"].drop_duplicates().tolist()
+
+    if len(plate_ids) != 1:
+        raise ValueError(f"Expected exactly one plate in the latest round. Found: {plate_ids}")
+
+    plate_id = plate_ids[0]
+
+    matrix = build_plate_matrix(
+        normalized_samples,
+        screening_round=latest_round,
+        plate_id=plate_id,
+        value_column="normalized_signal",
+    )
+
+    fig, _ = plot_plate_heatmap(
+        matrix,
+        title=(
+            f"Round {latest_round}"
+            f" - Plate {plate_id}"
+        ),
+    )
+
+    try:
+        return save_figure(
+            fig,
+            output_dir,
+            "plate_heatmap.png",
+            dpi=dpi,
+        )
+    finally:
+        plt.close(fig)
+
+

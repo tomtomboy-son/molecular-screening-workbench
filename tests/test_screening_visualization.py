@@ -20,6 +20,7 @@ from molecular_screening.screening_visualization import (
     export_screening_report,
     save_figure,
     get_replicate_pairs,
+    save_latest_plate_heatmap,
 )
 
 from molecular_screening.exceptions import(
@@ -742,3 +743,41 @@ def test_get_replicate_pairs() -> None:
         (2, 4),
         (3, 4),     
     ]
+
+
+def test_save_latest_plate_heatmap(
+        tmp_path: Path,
+) -> None:
+    df = pd.DataFrame(
+        {
+            "screening_round": [
+                1,
+                2,
+                2,
+            ],
+            "plate_id": [
+                "P001",
+                "P002",
+                "P002",
+            ],
+            "well": [
+                "A1",
+                "A1",
+                "A2",
+            ],
+            "normalized_signal": [
+                0.50,
+                0.80,
+                0.90,
+            ],
+        }
+    )
+
+    output_path = save_latest_plate_heatmap(
+        normalized_samples=df,
+        output_dir=tmp_path,
+    )
+
+    assert output_path.exists()
+    assert output_path.name == "plate_heatmap.png"
+    assert output_path.stat().st_size > 0
