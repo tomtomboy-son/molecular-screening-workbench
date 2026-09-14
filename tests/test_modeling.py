@@ -22,6 +22,7 @@ from molecular_screening.modeling import (
     make_logistic_pipeline,
     validate_no_group_overlap,
     run_modeling_analysis,
+    build_regression_oof_predictions,
 )
 from molecular_screening.sequence_features import AMINO_ACIDS
 import pytest
@@ -758,3 +759,21 @@ def test_run_modeling_analysis_returns_fitted_models_and_cv_scores(
 
     assert len(regression_predictions) == len(modeling_df)
     assert len(classification_predictions) == len(modeling_df)
+
+
+def test_build_regression_oof_predictions(
+        modeling_df,
+) -> None:
+    result = build_regression_oof_predictions(
+        modeling_df,
+        n_splits=3,
+    )
+
+    assert len(result) == len(modeling_df)
+    assert list(result.columns) == [
+        "variant_id",
+        "screening_round",
+        "observed_activity",
+        "predicted_activity",
+    ]
+    assert result["predicted_activity"].notna().all()

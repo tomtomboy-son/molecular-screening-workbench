@@ -711,3 +711,70 @@ def save_activity_vs_expression(
     finally:
         plt.close(fig)
 
+
+def plot_prediction_vs_observation(
+        prediction_df: pd.DataFrame,
+):
+    required_columns = {
+        "observed_activity",
+        "predicted_activity",
+    }
+
+    missing_columns = required_columns - set(prediction_df.columns)
+
+    if missing_columns:
+        raise MissingRequiredColumnsError(f"Missing required columns: {sorted(missing_columns)}")
+
+    fig, ax = plt.subplots()
+
+    ax.scatter(
+        prediction_df["observed_activity"],
+        prediction_df["predicted_activity"],
+    )
+
+    minimum = min(
+        prediction_df["observed_activity"].min(),
+        prediction_df["predicted_activity"].min(),
+    )
+
+    maximum = max(
+        prediction_df["observed_activity"].max(),
+        prediction_df["predicted_activity"].max(),
+    )
+
+    ax.plot(
+        [minimum, maximum],
+        [minimum, maximum],
+        linestyle="--",
+    )
+
+    ax.set_xlabel("Observed activity")
+    ax.set_ylabel("Out-of-fold predicted activity")
+    ax.set_title("Predicted vs. observed activity")
+
+    fig.tight_layout()
+
+    return fig, ax
+
+
+def save_prediction_vs_observation(
+        prediction_df: pd.DataFrame,
+        output_dir: Path,
+        dpi: int=300,
+) -> Path:
+    if prediction_df.empty:
+        raise ValueError("Cannot plot predictions from empty data")
+
+    fig, _ = plot_prediction_vs_observation(
+        prediction_df,
+    )
+
+    try:
+        return save_figure(
+            fig,
+            output_dir,
+            "prediction_vs_observation.png",
+            dpi=dpi,
+        )
+    finally:
+        plt.close(fig)

@@ -22,6 +22,7 @@ from molecular_screening.screening_visualization import (
     get_replicate_pairs,
     save_latest_plate_heatmap,
     save_activity_vs_expression,
+    save_prediction_vs_observation,
 )
 
 from molecular_screening.exceptions import(
@@ -814,4 +815,32 @@ def test_save_activity_vs_expression(
 
     assert output_path.exists()
     assert output_path.name == "activity_vs_expression.png"
+    assert output_path.stat().st_size > 0
+
+
+def test_save_prediction_vs_observation(
+        tmp_path: Path,
+) -> None:
+    df = pd.DataFrame(
+        {
+            "observed_activity": [
+                0.2,
+                0.5,
+                0.8,
+            ],
+            "predicted_activity": [
+                0.3,
+                0.45,
+                0.75,
+            ],
+        }
+    )
+
+    output_path = save_prediction_vs_observation(
+        prediction_df=df,
+        output_dir=tmp_path,
+    )
+
+    assert output_path.exists()
+    assert output_path.name == "prediction_vs_observation.png"
     assert output_path.stat().st_size > 0

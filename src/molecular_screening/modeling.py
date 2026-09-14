@@ -8,6 +8,7 @@ from sklearn.model_selection import (
     GroupKFold,
     StratifiedGroupKFold,
     cross_validate,
+    cross_val_predict,
 )
 from sklearn.dummy import DummyRegressor, DummyClassifier
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -503,3 +504,42 @@ def run_modeling_analysis(
         classification_cv=classification_cv,
         hit_threshold=hit_threshold,
     )
+
+
+def build_regression_oof_predictions(
+        df: pd.DataFrame,
+        group_column: str = GROUP_COLUMN,
+        n_splits: int=3,
+        random_state: int = RANDOM_STATE,
+) -> pd.DataFrame:
+    validate_modeling_table(df)
+
+    X, y = prepare_regression_data(df)
+    groups = df[group_column]
+
+    cv = GroupKFold(
+        n_splits=n_splits,
+        shuffle=True, # type: ignore
+        random_state=random_state, # type: ignore
+    )
+
+    model = make_linear_pipeline()
+
+    predictions = cross_val_predict(
+        model,
+        X,
+        y,
+        groups=groups,
+        cv=cv,
+    )
+
+    return pd.DataFrame(
+        {
+            "variant_id": df["variant_id"].to_numpy(),
+            "screening_round": df[group_column].to_numpy(),
+            "observed_activity": y.to_numpy(),
+            "predicted_activity": predictions,
+        }
+    )
+
+

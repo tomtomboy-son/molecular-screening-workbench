@@ -19,6 +19,7 @@ from molecular_screening.modeling import (
     ModelingResult,
     build_modeling_table,
     run_modeling_analysis,
+    build_regression_oof_predictions,
 )
 from molecular_screening.candidate_ranking import (
     build_candidate_feature_table,
@@ -28,6 +29,7 @@ from molecular_screening.candidate_ranking import (
 from molecular_screening.screening_visualization import (
     save_latest_plate_heatmap,
     save_activity_vs_expression,
+    save_prediction_vs_observation,
 )
 
 
@@ -126,12 +128,28 @@ def run_analysis(
         n_splits=cv_splits,
     )
 
+    oof_predictions = build_regression_oof_predictions(
+        modeling_df,
+        n_splits=cv_splits,
+    )
+
+    oof_predictions.to_csv(
+        intermediate_dir / "regression_oof_predictions.csv",
+        index=False,
+    )
+
+    save_prediction_vs_observation(
+        prediction_df=oof_predictions,
+        output_dir=output_dir,
+    )
+    
+
     if (
         candidate_sequence_path is None
     ) != (
         candidate_expression_path is None
     ):
-        raise ValueError("Candidate sequence and expression paths must be privided together")
+        raise ValueError("Candidate sequence and expression paths must be provided together")
 
     if (
         candidate_sequence_path is not None
