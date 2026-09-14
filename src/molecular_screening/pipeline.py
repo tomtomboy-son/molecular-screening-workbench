@@ -31,6 +31,9 @@ from molecular_screening.screening_visualization import (
     save_activity_vs_expression,
     save_prediction_vs_observation,
 )
+from molecular_screening.reporting import (
+    write_model_scores,
+)
 
 
 RENAME_CONFIG_PATH = Path(__file__).with_name("rename_config.json")
@@ -126,6 +129,11 @@ def run_analysis(
         modeling_df,
         hit_threshold=hit_threshold,
         n_splits=cv_splits,
+    )
+
+    write_model_scores(
+        modeling_result=modeling_result,
+        output_path=output_dir / "model_scores.json",
     )
 
     oof_predictions = build_regression_oof_predictions(
