@@ -33,6 +33,8 @@ from molecular_screening.screening_visualization import (
 )
 from molecular_screening.reporting import (
     write_model_scores,
+    build_model_scores_payload,
+    write_analysis_report,
 )
 
 
@@ -171,9 +173,20 @@ def run_analysis(
             )
         )
 
+        ranked_candidates: pd.DataFrame | None=None
+
         scored_candidates = predict_candidate_socres(
             candidate_table,
             modeling_result,
+        )
+
+        model_scores = build_model_scores_payload(modeling_result)
+        write_analysis_report(
+            output_path=output_dir / "report.md",
+            modeling_table=modeling_df,
+            quality_control=plate_result.quality_control,
+            model_scores=model_scores,
+            ranked_candidates=ranked_candidates,
         )
 
         ranked_candidates = rank_candidate_scores(scored_candidates)
