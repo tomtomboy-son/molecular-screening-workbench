@@ -1,124 +1,62 @@
-# 朱博研究室接続型・Real Python夏季習熟コース
+# Molecular Screening Workbench
 
-以下の表記で統一する。
+A reproducible Python workflow for molecular screening and directed-evolution data analysis.
 
-* **［RP-LP］**：Real Pythonの正式なLearning Path名
-* **［RP］**：Real Python内の正式なCourse／Tutorial名
-* **［EXT］**：Real Python外の公式教材
-* **［BUILD］**：教材ではなく、自分で制作する課題
+The application integrates plate-assay quality control, signal normalization, protein-sequence feature extraction, expression data, group-aware machine learning, prospective candidate ranking, visualization, and automated report generation.
 
-したがって、Real Python名が書かれていない学習項目は、必ず［EXT］または［BUILD］と明記する。
+## Workflow
 
----
+Raw plate measurements  
+→ quality control  
+→ blank correction  
+→ positive-control normalization  
+→ variant-level aggregation  
+→ protein sequence features  
+→ expression integration  
+→ regression / classification  
+→ group-aware cross-validation  
+→ prospective candidate scoring  
+→ candidate ranking  
+→ figures and report
 
-# 1. コース全体の研究上の軸
+## Installation
 
-朱博研究室の公式な研究領域は、以下のとおりである。
+Python 3.12 or later is required.
 
-* 進化分子工学
-* 分子認識工学
-* AI・バイオ融合
-* 抗体・酵素などの生体分子の改変
-* 超高速スクリーニング
+```bash
+git clone <repository-url>
+cd molecular-screening-workbench
 
-以前整理した次の流れを、2カ月間の一本のプロジェクトとして再現する。
+python3 -m venv .venv
+source .venv/bin/activate
 
-> 分子ライブラリを作る
-> → 実験でスクリーニングする
-> → 測定値をデータ化する
-> → 配列と実験値をAIに学習させる
-> → 次に作る候補分子を選ぶ
-
-## 最終制作物
-
-```text
-molecular-screening-workbench
+python3 -m pip install -e ".[dev]"
 ```
 
-### 入力
+Verify the installation:
 
-* DNAまたはアミノ酸配列
-* 96ウェルプレート測定値
-* 発現量・蛍光値・結合シグナル
-* ブランク・陽性対照・陰性対照
-* スクリーニングラウンド
-* 親配列・変異情報
-
-### 出力
-
-* データ品質レポート
-* 補正・正規化済み測定値
-* 配列特徴量
-* ヒット候補一覧
-* 機械学習モデルの評価
-* 次ラウンド候補の順位表
-
----
-
-# 2. 7月17日〜9月16日の学習工程
-
-## 7月17日〜7月19日
-
-### 研究用開発環境を固定する
-
-**［RP-LP］Perfect Your Python Development Setup**
-
-履修する正式教材：
-
-1. **［RP］An Effective Python Environment: Making Yourself at Home**　✓
-2. **［RP］Python Development in Visual Studio Code (Setup Guide)**　✓
-3. **［RP］Working With Python Virtual Environments**　✓
-4. **［RP］Introduction to Git and GitHub for Python**　✓
-
-これらは、VS Code、仮想環境、Git、GitHubなどを扱う正式Learning Path内の教材である。
-
-### ［BUILD］✓
-
-```text
-molecular-screening-workbench/
-├── data/
-│   ├── raw/
-│   └── processed/
-├── notebooks/
-├── src/
-│   └── molecular_screening/
-├── tests/
-├── reports/
-├── pyproject.toml
-└── README.md
+```bash
+molecular-screen --help
 ```
 
-### 合格条件
+## Input files
 
-GitHubから新しいディレクトリへcloneし、仮想環境を再構築できる。✓
+### Protein sequences
 
----
+FASTA containing measured protein variants.
 
-## 7月20日〜7月26日
+```text
+>WT
+MKTAYIAKQRQISFVK...
+>VAR001
+MKTAYIAKQRQISFIK...
+```
 
-### 実験データを壊さず読み込む
+The first sequence is currently treated as the parent/reference sequence.
 
-**［RP-LP］Data Collection & Storage**
+### Plate assay CSV
 
-履修する正式教材：
-
-1. **［RP］Reading and Writing CSV Files**　✓
-2. **［RP］Working With JSON in Python**　✓
-3. **［RP］Reading and Writing Files With pandas**　✓
-
-このLearning PathはCSV、JSON、Excel、SQL、SQLiteなどを扱うが、この週は最初の三つだけを使う。AWS S3やSQLAlchemyは履修しない。
-
-**［RP-LP］Exceptions, Logging, and Debugging**
-
-4. **［RP］Raising and Handling Python Exceptions** ✓
-5. **［RP］Using raise for Effective Exceptions** ✓
-6. **［RP］Logging Inside Python** ✓
-
-正式Learning Pathには例外処理、独自エラー、ログ、デバッグが含まれる。
-
-### ［BUILD］✓
-
-プレートリーダーCSVを次の統一形式へ変換する。
+Required canonical fields:
 
 ```text
 plate_id
@@ -130,367 +68,131 @@ control_type
 screening_round
 ```
 
-次の場合は明示的な例外を出す。
+Control types include:
 
-* 必須列がない
-* ウェル名が不正
-* 測定値が数値でない
-* 同じウェルが重複している
-* 対照ウェルがない
+```text
+blank
+positive
+negative
+sample
+```
 
----
+### Expected layout
 
-## 7月27日〜8月2日
+Defines the expected wells and permits detection of missing measurements.
 
-### pandasでスクリーニング結果を処理する
+Required fields:
 
-**［RP-LP］pandas for Data Science**
+```text
+screening_round
+plate_id
+well
+variant_id
+control_type
+```
 
-履修する正式教材：
-
-1. **［RP］Introduction to pandas** ✓
-2. **［RP］Explore Your Dataset With pandas** ✓
-3. **［RP］The pandas DataFrame: Working With Data Efficiently** ✓
-4. **［RP］Reading and Writing Files With pandas** ✓
-5. **［RP］Data Cleaning With pandas and NumPy** ✓
-6. **［RP］SettingWithCopyWarning in pandas: Views vs Copies** ✓ 
-7. **［RP］pandas GroupBy: Grouping Real World Data in Python** ✓
-8. **［RP］Combining Data in pandas With concat() and merge()** ✓
-
-このLearning PathはDataFrame、欠損処理、GroupBy、データ結合、pivot、性能改善まで扱う。
-
-### ［BUILD］プレート測定値の補正・集約パイプライン ✓
-
-標準化済みプレートCSVを読み込み、プレートごとの対照値を用いて測定値を補正し、variant単位の解析用テーブルを出力する。
-
-実装対象：
-プレートごとのブランク平均を計算する
-sample値からブランク平均を減算する
-陽性対照を基準に正規化する
-variantごとに反復測定をまとめる
-平均、標準偏差、変動係数、測定数を計算する
-期待されるウェルまたはvariantの欠損を検出する
-複数プレートを同一スキーマで結合する
-variant_idをキーに配列表と結合する
-
-完成物：
-
-src/molecular_screening/plate_analysis.py
-
-入力：
-
-data/processed/processed_*.csv
-data/reference/variants.csv
-
-出力：
-
-data/analysis/variant_activity_summary.csv
-data/analysis/plate_qc_summary.csv
-
-合格条件：
-
-対照値がプレート単位で計算される
-異なるプレートの対照を混用しない
-各variantについて平均・標準偏差・変動係数が得られる
-欠損ウェルを一覧化できる
-配列IDとの結合失敗を検出できる
-pytestで正常系と異常系が通る
-一つのコマンドで入力から出力まで生成できる
-
----
-
-## 8月3日〜8月9日
-
-### 実験品質を統計と図で判断する
-
-**［RP-LP］Data Visualization With Python**
-
-履修する正式教材：
-
-1. **［RP］Plot With pandas: Python Data Visualization Basics** ✓
-2. **［RP］Histogram Plotting in Python: NumPy, Matplotlib, Pandas & Seaborn** ✓
-3. **［RP］Python Plotting With Matplotlib**　✓
-4. **［RP］Using plt.scatter() to Visualize Data in Python**　✓
-
-Bokeh、Dash、FoliumなどのWeb可視化教材は今回は省略する。
-
-**［RP-LP］Math for Data Science**
-5. **［RP］Python Statistics Fundamentals: How to Describe Your Data** ✓
-6. **［RP］NumPy, SciPy, and pandas: Correlation With Python**　✓
-
-Math for Data Scienceは、記述統計、相関、線形回帰、ロジスティック回帰など五つの教材で構成されている。
-
-### ［BUILD］✓
-
-* 96ウェル配置ヒートマップ
-* 測定値ヒストグラム
-* 反復測定間の散布図
-* 発現量と活性値の散布図
-* プレート別・ラウンド別分布
-* 変異体別平均値と誤差
-* 外れ値候補一覧
-
-この週の目的は、単にグラフを描くことではなく、次の問いを検査することである。
-
-> 高シグナルが本当に高機能分子を意味するのか
-
----
-
-## 8月10日〜8月16日
-
-### 配列を実験データへ接続する
-
-ここはReal Pythonだけでは習得できない。
-
-### Real Python部分
-
-**［RP-LP］Write More Pythonic Code**
-
-1. **［RP］Structuring a Python Application** ✓
-2. **［RP］Python Type Checking** ✓
-
-これらはアプリケーション構造と型ヒントを扱う正式教材である。
-
-### Real Python外
-
-1. **［EXT］Biopython Tutorial — Sequence Input/Output** ✓
-2. **［EXT］Biopython Tutorial — Sequence annotation objects** ✓
-3. **［EXT］Biopython API — Bio.SeqUtils.ProtParam**
-
-`Bio.SeqIO.parse()`は、FASTAなどの配列ファイルを`SeqRecord`として読み込む。
-
-`ProteinAnalysis`では、以下を計算できる。
-
-* アミノ酸組成
-* 分子量
-* 芳香族残基率
-* 等電点
-* GRAVY
-* 指定したpHにおける電荷
-
-### ［BUILD］✓
-
-配列ごとに以下を計算する。
+### Expression data
 
 ```text
 variant_id
-sequence_length
-mutation_count
-molecular_weight
-isoelectric_point
-aromaticity
-gravy
-charge_at_ph7
-fraction_A
-fraction_C
-...
-fraction_Y
+expression_level
 ```
 
-さらに、野生型または親配列との差分を抽出する。
+### Prospective candidates
 
-```text
-A15V
-G42D
-Y81F
-```
+Candidate sequences can optionally be supplied together with candidate expression values.
 
----
+Candidate activity must not be supplied because these variants are treated as experimentally unmeasured.
 
-## 8月17日〜8月23日
+## Running the complete analysis
 
-### 配列と実験値の関係をモデル化する
-
-**［RP-LP］Math for Data Science**
-
-履修する正式教材：
-
-1. **［RP］Starting With Linear Regression in Python**　✓
-2. **［RP］Logistic Regression in Python**　✓
-3. **［RP］Stochastic Gradient Descent Algorithm With Python and NumPy**
-
-### ［BUILD］✓
-
-二つの課題を作る。
-
-#### 回帰問題
-
-入力：
-
-* アミノ酸組成
-* 分子量
-* 等電点
-* 疎水性
-* 変異数
-* 発現量
-
-出力：
-
-* 補正済み活性値
-
-#### 分類問題
-
-出力を次の二値に変える。
-
-```text
-hit = 1
-not_hit = 0
-```
-
-この段階では、高度なAIモデルよりも、以下を基準モデルにする。
-
-* 単純平均
-* 線形回帰
-* ロジスティック回帰
-
----
-
-## 8月24日〜8月30日
-
-### 機械学習を正しく評価する
-
-**［RP-LP］Machine Learning With Python**
-
-このLearning Path全体は31教材あり、画像処理、NLP、LLM、RAGなども含む。
-
-朱博研究室との直接的な接続が弱いため、全体を完走せず、次の二つだけを履修する。
-
-1. **［RP］Splitting Datasets With scikit-learn and train_test_split()**　✓
-2. **［RP］K-Means Clustering in Python: A Practical Guide** ✓
-
-### Real Python外
-
-1. **［EXT］scikit-learn — Getting Started**　✓
-2. **［EXT］Cross-validation: evaluating estimator performance**
-3. **［EXT］Metrics and scoring**
-4. **［EXT］Pipelines and composite estimators**
-5. **［EXT］Common pitfalls and recommended practices**
-
-scikit-learnの`Pipeline`は、前処理とモデルを一体化し、交差検証中のデータリークを防ぎやすくする。
-
-公式文書も、前処理前に訓練データとテストデータを分割し、テストデータを`fit`に含めないことを推奨している。
-
-### ［BUILD］✓
-
-* ダミー予測との比較
-* 交差検証
-* 回帰指標
-* 分類指標
-* `Pipeline`による前処理
-* ランダムシード固定
-* データリーク検査
-
-配列が同じ親分子から派生している場合、近縁配列を訓練用とテスト用へ無作為に分散させない。
-
-親系統またはスクリーニングラウンド単位で分割する。
-
----
-
-## 8月31日〜9月6日
-
-### 研究コードとして整える
-
-**［RP-LP］Write More Pythonic Code**
-
-履修する正式教材：
-
-1. **［RP］Writing Idiomatic Python**
-2. **［RP］Writing Beautiful Pythonic Code With PEP 8**
-3. **［RP］Managing and Measuring Python Code Quality**
-4. **［RP］Structuring a Python Application**
-5. **［RP］Refactoring Python Applications for Simplicity**
-6. **［RP］Python Type Checking**
-7. **［RP］Documenting Code in Python**
-
-**［RP-LP］Important Standard Library Modules**
-
-8. **［RP］Building Command Line Interfaces With argparse**
-
-これはReal Python内の正式なCourse名である。
-
-### ［BUILD］
+Example using the included synthetic directed-evolution dataset:
 
 ```bash
 molecular-screen analyze \
-    --sequences variants.fasta \
-    --assay plate_results.csv \
-    --output reports/run_01
+  --sequences data/synthetic_directed_evolution/variants.fasta \
+  --assay data/synthetic_directed_evolution/plate_results.csv \
+  --layout data/synthetic_directed_evolution/expected_layout.csv \
+  --expression data/synthetic_directed_evolution/expression.csv \
+  --candidates data/synthetic_directed_evolution/candidates.fasta \
+  --candidate-expression data/synthetic_directed_evolution/candidate_expression.csv \
+  --output reports/final_run \
+  --hit-threshold 0.5 \
+  --cv-splits 3
 ```
 
-Notebookの中でしか動かない解析を、コマンドラインから再実行できるプログラムへ変える。
+## Analysis
 
----
+### Plate quality control
 
-## 9月7日〜9月13日
+Measurements are evaluated independently for each plate.
 
-### テストと自動検証を導入する
-
-**［RP-LP］Testing and Continuous Integration**
-
-履修する正式教材：
-
-1. **［RP］Test-Driven Development With pytest**
-2. **［RP］Testing Your Code With pytest**
-3. **［RP］Managing and Measuring Python Code Quality**
-4. **［RP］Continuous Integration With Python**
-5. **［RP］Python Continuous Integration and Deployment Using GitHub Actions**
-
-正式Learning Pathには、以下が含まれる。
-
-* pytest
-* mock
-* コード品質
-* GitHub Actions
-* CI
-
-### ［BUILD］
-
-最低限、次を自動テストする。
-
-* 不正なアミノ酸文字
-* 空配列
-* 配列ID重複
-* 測定値欠損
-* 対照ウェル欠損
-* 反復数不足
-* 同一ウェル重複
-* 特徴量計算
-* ブランク補正
-* 正規化
-* モデル学習
-* 出力ファイル生成
-
-GitHubへpushすると、自動的にpytestが実行される状態にする。
-
----
-
-## 9月14日〜9月16日
-
-### 進化分子工学の一巡を実演する
-
-新規教材は履修しない。
-
-### ［BUILD］最終課題
-
-架空の3ラウンド分のデータを用意する。
+Blank correction:
 
 ```text
-Round 0：親配列
-Round 1：ランダム変異体
-Round 2：上位候補周辺の変異体
+background_corrected = signal - blank_mean
 ```
 
-プログラムにより、以下を実行する。
+Positive-control normalization:
 
-1. データを読み込む
-2. 品質を確認する
-3. 測定値を補正する
-4. 配列特徴量を作る
-5. モデルを学習する
-6. 次ラウンド候補を順位付けする
-7. 図表とMarkdownレポートを出力する
+```text
+normalized_signal =
+    background_corrected /
+    (positive_mean - blank_mean)
+```
 
-### 最終出力
+The workflow also detects missing expected wells, missing controls, duplicate wells, invalid signals, and incomplete variant coverage.
+
+### Protein sequence features
+
+The current representation includes:
+
+```text
+sequence length
+mutation count
+molecular weight
+isoelectric point
+aromaticity
+GRAVY
+charge at pH 7
+amino-acid composition
+parent-relative substitutions
+```
+
+### Modeling
+
+Regression predicts normalized activity.
+
+Classification predicts whether activity exceeds the configured hit threshold.
+
+The model input currently includes sequence-derived features and expression level.
+
+Scaling and estimators are combined in scikit-learn pipelines.
+
+### Cross-validation
+
+Screening round is used as the grouping variable so that observations from the held-out round are not used to train the model evaluated on that round.
+
+Out-of-fold regression predictions are generated for prediction-versus-observation visualization.
+
+### Candidate ranking
+
+Prospective candidates are never included in model training.
+
+The fitted models estimate:
+
+```text
+predicted_activity
+hit_probability
+```
+
+Candidates are ranked primarily by predicted activity and secondarily by hit probability.
+
+The ranking is a hypothesis for the next experimental round, not experimental confirmation.
+
+## Output
+
+A complete run produces:
 
 ```text
 reports/final_run/
@@ -502,77 +204,68 @@ reports/final_run/
 ├── plate_heatmap.png
 ├── activity_vs_expression.png
 ├── prediction_vs_observation.png
-└── report.md
+├── report.md
+└── intermediate/
+    ├── modeling_table.csv
+    └── regression_oof_predictions.csv
 ```
 
----
+`report.md` provides the human-readable summary.
 
-# 3. 1日の進め方
+`model_scores.json` preserves machine-readable cross-validation metrics.
 
-| 内容                |     時間 |
-| ----------------- | -----: |
-| Real Python教材     | 60〜90分 |
-| 教材を閉じて再実装         |    45分 |
-| 研究プロジェクトへ移植       |   120分 |
-| テスト・修正            |    30分 |
-| README・Git commit |    30分 |
+`ranked_candidates.csv` contains prospective candidates for the next screening round.
 
-7日目は新規教材を進めず、以下だけを行う。
+## Synthetic demonstration dataset
 
-* 前週コードの再実装
-* バグ修正
-* README更新
-* 成果物の再生成
+The repository contains a fictional three-round directed-evolution experiment:
 
----
+```text
+Round 0
+parent
 
-# 4. 今回、意図的に履修しないもの
+Round 1
+exploratory mutants
 
-* Flask
-* FastAPI
-* Django
-* REST API
-* SQLAlchemy
-* AWS
-* Dockerの深掘り
-* Webスクレイピング
-* NLP
-* LLMアプリ開発
-* RAG
-* 画像認識
-* 深層学習
+Round 2
+focused mutants around promising mutations
 
-朱博研究室への最短距離はWebサービス開発ではない。
+Round 3
+unmeasured prospective candidates
+```
 
-優先順序は、次のとおりである。
+The dataset exists to test the entire workflow end to end. It is not experimental biological evidence.
 
-> 実験データ処理
-> → 配列処理
-> → 統計
-> → 機械学習
-> → 候補分子選択
-> → 再現可能な研究コード
+## Testing
 
----
+Run the complete test suite with:
 
-# 5. 9月16日の到達基準
+```bash
+python3 -m pytest -ra
+```
 
-次をすべて満たせば、この夏季コースは成功である。
+GitHub Actions runs the same test suite on pushes and pull requests.
 
-* FASTAと測定値CSVを読み込める
-* 配列と実験値を正しく結合できる
-* プレートデータを補正・正規化できる
-* 実験品質を図表で検査できる
-* タンパク質特徴量を計算できる
-* 回帰・分類モデルを構築できる
-* データリークを説明できる
-* 次ラウンド候補を順位付けできる
-* コマンド一つで解析を再実行できる
-* pytestとGitHub Actionsで検証できる
-* READMEだけで第三者が再現できる
+Tests cover, among other cases, invalid sequences, duplicate IDs, missing assay values, missing controls, insufficient measurements, duplicate wells, feature generation, normalization, modeling, candidate ranking, visualization, CLI behavior, and final outputs.
 
-この構成では、Python学習そのものが、朱博研究室の
+## Current limitations
 
-> 作る・選ぶ・学習する・次を設計する
+The demonstration dataset is intentionally small.
 
-という研究サイクルに直結する。
+The present sequence representation summarizes global amino-acid and physicochemical properties and therefore does not explicitly represent residue order, mutation position, structural context, or epistasis.
+
+Prospective Round 3 candidates contain more mutations than the measured training variants, so candidate prediction includes extrapolation in mutation-count space.
+
+Candidate expression is assumed to be available from a preliminary measurement or prediction before the functional assay.
+
+Regression activity and classification hit probability are derived from overlapping training information and should not be interpreted as independent evidence.
+
+## Project history
+
+This repository was originally developed as a structured summer learning project combining Python software engineering with a protein-engineering screening workflow.
+
+The original learning roadmap can be retained separately under:
+
+```text
+docs/learning-path.md
+```
